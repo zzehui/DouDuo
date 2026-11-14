@@ -199,6 +199,8 @@ function applyLang() {
   document.title = T("title");
   document.querySelectorAll("[data-t]").forEach((el) => { el.textContent = T(el.dataset.t); });
   document.querySelector("#langBtn").textContent = LANG === "zh" ? "EN" : "中文";
+  const pb = document.querySelector("#proBtn");
+  if (pb) pb.textContent = T("proBtnLabel");
   paint();
 }
 document.querySelector("#langBtn").addEventListener("click", () => { LANG = LANG === "zh" ? "en" : "zh"; applyLang();
