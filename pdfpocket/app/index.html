@@ -117,7 +117,7 @@
     <button class="tab" data-mode="rotate" data-t="rotate">旋转<b class="prodot" hidden>Pro</b></button>
     <button class="tab" data-mode="compress" data-t="compress">压缩</button>
     <button class="tab" data-mode="img" data-t="img">图片转 PDF<b class="prodot" hidden>Pro</b></button>
-    <button class="tab" data-mode="invoice" data-t="invoiceTab">发票拼版<b class="prodot">Pro</b></button>
+    <button class="tab" data-mode="invoice" data-t="invoiceTab">发票拼版<b class="prodot" hidden>Pro</b></button>
   </div>
 
   <div class="drop" id="drop">
@@ -244,7 +244,16 @@ const T = (k, a) => { const s = DICT[LANG][k] != null ? DICT[LANG][k] : (DICT.zh
 function applyLang() {
   document.documentElement.lang = LANG === "zh" ? "zh-CN" : "en";
   document.title = T("title");
-  document.querySelectorAll("[data-t]").forEach((el) => { el.textContent = T(el.dataset.t); });
+  document.querySelectorAll("[data-t]").forEach((el) => {
+    const text = T(el.dataset.t);
+    const badge = el.querySelector(".prodot");
+    if (badge) {
+      const node = [...el.childNodes].find((n) => n.nodeType === Node.TEXT_NODE);
+      if (node) node.nodeValue = text; else el.insertBefore(document.createTextNode(text), el.firstChild);
+    } else {
+      el.textContent = text;
+    }
+  });
   document.querySelectorAll("#langSeg button").forEach((b) => b.classList.toggle("on", b.dataset.lang === LANG));
 document.querySelectorAll("#langSeg button").forEach((b) => {
   b.addEventListener("click", () => {
