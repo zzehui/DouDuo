@@ -1,0 +1,25 @@
+{
+  "name": "DOUDUO PDF 口袋",
+  "short_name": "PDF 口袋",
+  "description": "在浏览器里合并、压缩 PDF——文件不上传，全部在本机算完。",
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#0a0d12",
+  "theme_color": "#0a0d12",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "合并 PDF", "url": "./index.html?mode=merge", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "压缩 PDF", "url": "./index.html?mode=compress", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] }
+  ]
+}

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>新产品占位 · 豆多科技</title>
+<style>
+  :root{--bg:#0b0e13;--panel:#131922;--line:#243044;--tx:#eef2f7;--dim:#9aa7ba;--amber:#e8a33d}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+  .wrap{max-width:860px;margin:0 auto;padding:56px 24px 90px}
+  nav{display:flex;gap:18px;align-items:center;margin:0 0 38px;font-size:14px}
+  nav .brand{font-weight:700}
+  nav a{color:var(--dim);text-decoration:none}
+  nav a:hover{color:var(--amber)}
+  nav .sp{flex:1}
+  h1{font-size:25px;margin:0 0 8px}
+  .sub{color:var(--dim);margin:0 0 30px}
+  .card{display:block;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin:0 0 14px;text-decoration:none;color:inherit;transition:border-color .18s}
+  .card:hover{border-color:var(--amber)}
+  .card h2{margin:0 0 6px;font-size:17px;display:flex;gap:8px;align-items:center}
+  .card p{margin:0;color:var(--dim);font-size:13.5px}
+  .tag{font-size:11px;color:#231703;background:var(--amber);border-radius:5px;padding:1px 6px;font-weight:600}
+  .tag.ghost{background:#1d2635;color:#8fa0b8}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin:10px 0 24px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--dim);font-weight:600}
+  footer{margin-top:44px;color:#6b7789;font-size:13px;border-top:1px solid var(--line);padding-top:18px}
+  a{color:var(--amber)}
+</style></head><body><div class="wrap">
+  <nav>
+    <span class="brand">豆多科技</span>
+    <a href="../products/">产品</a>
+    <a href="../about/">关于</a>
+    <span class="sp"></span>
+    <a href="../pdfpocket/en/">PDF 口袋 · EN</a>
+  </nav>
+  <h1>这里留给下一个产品</h1>
+  <p class="sub">新产品按这套结构发布，保证每个产品长得一样、找得到文档。</p>
+  <table>
+    <tr><th>目录</th><th>放什么</th></tr>
+    <tr><td><code>/&lt;slug&gt;/index.html</code></td><td>落地页：是什么、给谁用、多少钱</td></tr>
+    <tr><td><code>/&lt;slug&gt;/manual/</code></td><td>中文手册</td></tr>
+    <tr><td><code>/&lt;slug&gt;/manual/en/</code></td><td>英文手册</td></tr>
+    <tr><td><code>/&lt;slug&gt;/app/</code></td><td>在线版（如果需要）</td></tr>
+    <tr><td><code>/&lt;slug&gt;/privacy.html</code></td><td>该产品隐私政策</td></tr>
+  </table>
+  <footer>豆多科技 · <a href="../">回首页</a></footer>
+</div></body></html>
