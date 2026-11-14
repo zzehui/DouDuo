@@ -245,8 +245,6 @@ function applyLang() {
   if (pb) pb.textContent = T("proBtnLabel");
   paint();
 }
-document.querySelector("#langBtn").addEventListener("click", () => { LANG = LANG === "zh" ? "en" : "zh"; applyLang();
-});
 
 const state = { mode: "merge", files: [], plan: "free", email: "", major: 0 };
 
