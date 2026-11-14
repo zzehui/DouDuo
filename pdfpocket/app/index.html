@@ -48,12 +48,24 @@
        background:#131922;border:1px solid #243044;border-radius:12px;padding:12px 14px;margin:6px 0 14px}
   .pwa[hidden]{display:none}
   .pwa span{color:var(--dim);font-size:13.5px;flex:1 1 320px}
+
+  .pill{font-size:12px;border:1px solid #2a3648;border-radius:999px;padding:4px 10px;color:#9aa8bc}
+  .pill.pro{border-color:#8a5b17;color:#f0c07a;background:#2a1c07}
+  .prodot{font-size:10px;background:#e8a33d;color:#231703;border-radius:5px;padding:1px 4px;margin-left:5px;vertical-align:middle}
+  .tab.on .prodot{background:#231703;color:#f0c07a}
+  .modal{position:fixed;inset:0;background:rgba(6,9,14,.72);display:grid;place-items:center;z-index:30;padding:20px}
+  .modal[hidden]{display:none}
+  .card{background:#131922;border:1px solid #243044;border-radius:16px;padding:22px;width:min(420px,100%);display:flex;flex-direction:column;gap:12px}
+  .card h3{margin:0;font-size:18px}
+  .card input{background:#0e131b;border:1px solid #243044;color:#e8eef7;border-radius:9px;padding:9px 11px;font:inherit}
 </style>
 </head>
 <body>
 <header>
   <div class="logo">PDF</div>
   <div style="flex:1"><h1 data-t="title">PDF 口袋 · 在线版</h1><div class="sub" data-t="sub">所有处理在本机完成，文件不会离开你的电脑。</div></div>
+  <span class="pill" id="planPill">免费版</span>
+  <button class="btn ghost" id="proBtn" style="padding:6px 12px;font-size:13px">激活 Pro</button>
   <button class="btn ghost" id="langBtn" style="padding:6px 12px;font-size:13px">EN</button>
 </header>
 
@@ -64,6 +76,7 @@
     <button class="tab" data-mode="rotate" data-t="rotate">旋转</button>
     <button class="tab" data-mode="compress" data-t="compress">压缩</button>
     <button class="tab" data-mode="img" data-t="img">图片转 PDF</button>
+    <button class="tab pro" data-mode="invoice" data-t="invoiceTab" hidden>发票拼版<b class="prodot">Pro</b></button>
   </div>
 
   <div class="drop" id="drop">
@@ -76,6 +89,13 @@
 
   <div class="opt on" id="opt-merge">
     <div class="row"><span class="hint" data-t="mergeHint">按列表顺序合并；拖拽排序请在扩展版里用 ↑↓</span></div>
+    <div class="row pro" id="wmWrap" hidden>
+      <label><input type="checkbox" id="wmOn"> <span data-t="wmLabel">加水印</span></label>
+      <input type="text" id="wmText" maxlength="40" placeholder="内部资料 / 样例">
+    </div>
+  </div>
+  <div class="opt pro" id="opt-invoice" hidden>
+    <div class="row"><span class="hint" data-t="invoiceHint">把多份单页 PDF（发票、凭证）拼成 A4，每页 2 张，带裁切线和序号。</span></div>
   </div>
   <div class="opt" id="opt-split">
     <div class="row">
@@ -114,6 +134,19 @@
   <footer class="tip"><span data-t="tipA">想要批量拆分、加水印、发票拼版？</span><a href="../" data-t="tipB">装浏览器扩展版（Pro）</a></footer>
 </main>
 
+<div class="modal" id="proModal" hidden>
+  <div class="card">
+    <h3 data-t="proTitle">激活 Pro</h3>
+    <p class="hint" data-t="proBody">粘贴购买后收到的授权码。离线校验，不联网。</p>
+    <input id="licInput" placeholder="xxxxx.xxxxx" autocomplete="off">
+    <div class="row" style="justify-content:flex-end">
+      <button class="btn ghost" id="proClose" data-t="close">关闭</button>
+      <button class="btn primary" id="licBtn" data-t="activate">激活</button>
+    </div>
+    <p class="hint" id="licWho" hidden></p>
+    <p class="hint"><span data-t="proBuyHint">还没有授权码？</span><a id="buyLink" href="../../buy.html" target="_blank" data-t="proBuy">查看购买方式</a></p>
+  </div>
+</div>
 <div class="bar">
   <span class="hint" id="summary" data-t="noFiles">还没有文件</span>
   <button class="btn" id="runBtn" disabled data-t="run">开始处理</button>
@@ -121,7 +154,8 @@
 <div id="toast" hidden></div>
 
 <script type="module">
-import { merge, extract, splitEvery, rotate, info } from "./core.js";
+import { merge, extract, splitEvery, rotate, info, watermark, invoiceSheet } from "./core.js";
+import { verify, LICENSE_MAJOR } from "./license.js";
 
 const $ = (s) => document.querySelector(s);
 
@@ -134,7 +168,12 @@ const DICT = {
         added:"已加入样例.pdf（3 页）", fail:"处理失败：", noImg:"先加几张图片", demoFail:"样例加载失败：",
         splitOne:"份，在线版只下载第一份；批量导出请用扩展版", badRange:"页码写错了", unit:" 个文件 · ",
         mergeHint:"按列表顺序合并；拖拽排序请在扩展版里用 ↑↓", splitHint:"每 N 页切一份，或只取指定页（1-3,5）", imgHint:"每张图一页 A4，等比缩放居中，最多 5 张", compHint:"重压缩内嵌图片，文字与矢量保持清晰",
-        pwaHint:"装到桌面，下次点图标直接打开", pwaInstall:"安装到桌面", pwaDone:"已安装，桌面见", folder:"合并整个文件夹…", folderPick:"选一个文件夹，把里面所有 PDF 按文件名顺序合成一个", folderNone:"这个文件夹里没有 PDF", demoName:"样例.pdf", folderDone:"已加入 {0} 个 PDF", folderNoSupport:"这个浏览器不支持选文件夹，请用「选择 PDF」多选", pwaManual:"没有安装入口？用地址栏右侧的安装图标"},
+        pwaHint:"装到桌面，下次点图标直接打开", pwaInstall:"安装到桌面", pwaDone:"已安装，桌面见", folder:"合并整个文件夹…", folderPick:"选一个文件夹，把里面所有 PDF 按文件名顺序合成一个", folderNone:"这个文件夹里没有 PDF", demoName:"样例.pdf", folderDone:"已加入 {0} 个 PDF", folderNoSupport:"这个浏览器不支持选文件夹，请用「选择 PDF」多选", pwaManual:"没有安装入口？用地址栏右侧的安装图标",
+        invoiceTab:"发票拼版", invoiceHint:"把多份单页 PDF（发票、凭证）拼成 A4，每页 2 张，带裁切线和序号。", wmLabel:"加水印",
+        proTitle:"激活 Pro", proBody:"粘贴购买后收到的授权码。离线校验，不联网。", activate:"激活", close:"关闭",
+        proBuy:"查看购买方式", proBuyHint:"还没有授权码？ ", planFree:"免费版", planPro:"Pro",
+        licOk:"Pro 已激活", licBad:"授权码无效", licFmt:"格式不对：应该是「一串字符.一串字符」", licExpired:"这个码已过期",
+        needPro:"这是 Pro 功能：先激活授权码", invoicePro:"发票拼版是 Pro 功能"},
   en: {title:"PDF Pocket · Web", sub:"Everything runs on your machine. Your files never leave your computer.", merge:"Merge",
         split:"Split", rotate:"Rotate", compress:"Compress", img:"Images to PDF", drop:"Drop PDFs or images here, or click to choose",
         dropSub:"Multiple files · no upload · works offline · ", demo:"try a sample file", noFiles:"No files yet", run:"Run",
@@ -143,7 +182,12 @@ const DICT = {
         added:"sample.pdf added (3 pages)", fail:"Failed: ", noImg:"add some images first", demoFail:"Sample failed: ",
         splitOne:" parts — web version downloads the first only; batch export is in the extension", badRange:"bad page range", unit:" files · ",
         mergeHint:"Files merge in list order. Reordering with ↑↓ is in the extension.", splitHint:"Split every N pages, or take specific pages (1-3,5)", imgHint:"One A4 page per image, scaled to fit. Max 5 images.", compHint:"Re-compresses embedded images; text and vectors stay crisp.",
-        pwaHint:"Install to desktop — open it next time without typing a URL", pwaInstall:"Install to desktop", pwaDone:"Installed — check your desktop", folder:"Merge a whole folder…", folderPick:"Pick a folder; every PDF in it is merged in name order", folderNone:"No PDFs in that folder", demoName:"sample.pdf", folderDone:"Added {0} PDFs", folderNoSupport:"This browser can't pick a folder — use Choose PDFs", pwaManual:"No install prompt — use the install icon in the address bar"}
+        pwaHint:"Install to desktop — open it next time without typing a URL", pwaInstall:"Install to desktop", pwaDone:"Installed — check your desktop", folder:"Merge a whole folder…", folderPick:"Pick a folder; every PDF in it is merged in name order", folderNone:"No PDFs in that folder", demoName:"sample.pdf", folderDone:"Added {0} PDFs", folderNoSupport:"This browser can't pick a folder — use Choose PDFs", pwaManual:"No install prompt — use the install icon in the address bar",
+        invoiceTab:"Invoice sheet", invoiceHint:"Lay single-page PDFs (invoices, receipts) onto A4, 2 per page, with cut lines and numbering.", wmLabel:"Add watermark",
+        proTitle:"Activate Pro", proBody:"Paste the licence key you received. Verified offline, no network.", activate:"Activate", close:"Close",
+        proBuy:"See how to buy", proBuyHint:"No key yet? ", planFree:"Free", planPro:"Pro",
+        licOk:"Pro activated", licBad:"Invalid licence key", licFmt:"Wrong format — it should look like “xxxxx.xxxxx”", licExpired:"That key has expired",
+        needPro:"Pro feature — activate a licence first", invoicePro:"Invoice sheet is a Pro feature"}
 };
 let LANG = (navigator.language || "zh").toLowerCase().startsWith("zh") ? "zh" : "en";
 const T = (k, a) => { const s = DICT[LANG][k] != null ? DICT[LANG][k] : (DICT.zh[k] || k); return a ? s.replace(/\{(\d+)\}/g, (m, i) => (a[+i] != null ? a[+i] : m)) : s; };
@@ -154,9 +198,52 @@ function applyLang() {
   document.querySelector("#langBtn").textContent = LANG === "zh" ? "EN" : "中文";
   paint();
 }
-document.querySelector("#langBtn").addEventListener("click", () => { LANG = LANG === "zh" ? "en" : "zh"; applyLang(); });
+document.querySelector("#langBtn").addEventListener("click", () => { LANG = LANG === "zh" ? "en" : "zh"; applyLang();
+});
 
-const state = { mode: "merge", files: [] };
+const state = { mode: "merge", files: [], plan: "free", email: "", major: 0 };
+
+function applyPlan() {
+  const pro = state.plan === "pro";
+  document.querySelectorAll(".pro").forEach((el) => { el.hidden = !pro; });
+  const pill = $("#planPill");
+  pill.textContent = pro ? T("planPro") : T("planFree");
+  pill.classList.toggle("pro", pro);
+  $("#proBtn").hidden = pro;
+  if (pro) {
+    const who = $("#licWho");
+    who.hidden = false;
+    who.textContent = `已激活：${state.email}（第 ${state.major} 代授权）`;
+  }
+}
+
+async function bootLicense() {
+  try {
+    const key = localStorage.getItem("pp_license");
+    if (!key) return;
+    const v = await verify(key);
+    if (v.ok && v.major >= LICENSE_MAJOR) { state.plan = "pro"; state.email = v.email; state.major = v.major; applyPlan(); }
+  } catch { /* 校验失败就保持免费版 */ }
+}
+
+$("#proBtn").addEventListener("click", () => { $("#proModal").hidden = false; $("#licInput").focus(); });
+$("#proClose").addEventListener("click", () => { $("#proModal").hidden = true; });
+$("#proModal").addEventListener("click", (e) => { if (e.target.id === "proModal") $("#proModal").hidden = true; });
+$("#licBtn").addEventListener("click", async () => {
+  const key = $("#licInput").value.trim();
+  const v = await verify(key);
+  if (!v.ok) {
+    const msg = v.reason === "badFormat" ? T("licFmt") : v.reason === "expired" ? T("licExpired") : T("licBad");
+    toast(msg); return;
+  }
+  if (v.major < LICENSE_MAJOR) { toast(T("licBad")); return; }
+  localStorage.setItem("pp_license", key);
+  state.plan = "pro"; state.email = v.email; state.major = v.major;
+  applyPlan();
+  document.querySelector("#planPill").textContent = T("planPro");
+  $("#proModal").hidden = true;
+  toast(T("licOk"));
+});
 
 const drop = $("#drop"), input = $("#fileInput");
 drop.addEventListener("click", () => input.click());
@@ -250,7 +337,13 @@ $("#runBtn").addEventListener("click", async () => {
   const btn = $("#runBtn"); btn.disabled = true; const old = btn.textContent; btn.textContent = T("working");
   try {
     if (state.mode === "merge") {
-      download(await merge(state.files.map((f) => f.buf)), "merged.pdf");
+      let buffers = state.files.map((f) => f.buf);
+      const wmOn = document.querySelector("#wmOn");
+      if (wmOn && wmOn.checked && state.plan === "pro") {
+        const txt = (document.querySelector("#wmText").value || "内部资料").trim();
+        buffers = await Promise.all(buffers.map((b) => watermark(b, txt)));
+      }
+      download(await merge(buffers), "merged.pdf");
     } else if (state.mode === "split") {
       const mode = document.querySelector('input[name="sm"]:checked').value;
       if (mode === "range") download(await extract(state.files[0].buf, $("#splitRange").value.trim()), "extracted.pdf");
@@ -262,6 +355,10 @@ $("#runBtn").addEventListener("click", async () => {
     } else if (state.mode === "rotate") {
       const scope = document.querySelector('input[name="rm"]:checked').value;
       download(await rotate(state.files[0].buf, scope === "range" ? $("#rotateRange").value.trim() : "", +$("#rotateDeg").value), "rotated.pdf");
+    } else if (state.mode === "invoice") {
+      if (state.plan !== "pro") { toast(T("invoicePro")); return; }
+      const bytes = await invoiceSheet(state.files.map((f) => f.buf));
+      download(bytes, "invoices-a4.pdf");
     } else if (state.mode === "img") {
       const { imagesToPdf } = await import("./core.js");
       const items = state.files.filter((f) => f.kind === "image").map((f) => ({ bytes: f.buf, type: f.type, name: f.name }));
@@ -291,6 +388,7 @@ $("#demoLink").addEventListener("click", async (e) => {
 });
 
 applyLang();
+bootLicense();
 
 // ---------- 合并整个文件夹（Chromium 的 File System Access API） ----------
 const folderBtn = $("#folderBtn");
