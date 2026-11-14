@@ -60,6 +60,7 @@
   .card h3{margin:0;font-size:18px}
   .card input{background:#0e131b;border:1px solid #243044;color:#e8eef7;border-radius:9px;padding:9px 11px;font:inherit}
   [hidden]{display:none!important}
+  #proActions{background:none;border:0;padding:0;margin-top:4px}
 </style>
 </head>
 <body>
@@ -141,7 +142,7 @@
     <h3 data-t="proTitle">激活 Pro</h3>
     <p class="hint" data-t="proBody">粘贴购买后收到的授权码。离线校验，不联网。</p>
     <input id="licInput" placeholder="xxxxx.xxxxx" autocomplete="off">
-    <div class="row" style="justify-content:flex-end">
+    <div class="row" id="proActions" style="justify-content:flex-end">
       <button class="btn ghost" id="proClose" data-t="close">关闭</button>
       <button class="btn primary" id="licBtn" data-t="activate">激活</button>
     </div>
