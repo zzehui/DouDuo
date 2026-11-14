@@ -1,6 +1,6 @@
 // PDF 的核心操作。浏览器和 Node 共用：只依赖 pdf-lib，不碰 DOM。
 // 所有处理都在本地完成——不上传、不落第三方服务器。
-import { PDFDocument, degrees } from "../vendor/pdf-lib.esm.min.js";
+import { PDFDocument, degrees } from "./pdf-lib.esm.min.js";
 
 export const LIMITS = { free: { files: 999, pages: 99999, batch: true }, pro: { files: 999, pages: 99999, batch: true } };
 
@@ -128,7 +128,7 @@ async function watermarkPng(text, size) {
 }
 
 export async function watermark(buf, text, opts = {}) {
-  const { PDFDocument } = await import("../vendor/pdf-lib.esm.min.js");
+  const { PDFDocument } = await import("./pdf-lib.esm.min.js");
   const doc = await PDFDocument.load(buf, { ignoreEncryption: true });
   const size = opts.size || 34;
   const png = await watermarkPng(text, size * 2);
@@ -149,7 +149,7 @@ export async function watermark(buf, text, opts = {}) {
 
 // 发票拼版：多份单页 PDF → A4 每页 2 张，带裁切虚线与序号。
 export async function invoiceSheet(buffers, opts = {}, cb) {
-  const { PDFDocument, StandardFonts, rgb } = await import("../vendor/pdf-lib.esm.min.js");
+  const { PDFDocument, StandardFonts, rgb } = await import("./pdf-lib.esm.min.js");
   const out = await PDFDocument.create();
   const font = await doc0Font(out);
   const A4 = [595.28, 841.89];
@@ -193,13 +193,13 @@ export async function invoiceSheet(buffers, opts = {}, cb) {
 }
 
 async function doc0Font(doc) {
-  const { StandardFonts } = await import("../vendor/pdf-lib.esm.min.js");
+  const { StandardFonts } = await import("./pdf-lib.esm.min.js");
   return doc.embedFont(StandardFonts.Helvetica);
 }
 
 // 图片 → PDF：每张图一页 A4，等比缩放居中，留 24pt 边距。支持 JPG / PNG。
 export async function imagesToPdf(items, opts = {}, cb) {
-  const { PDFDocument } = await import("../vendor/pdf-lib.esm.min.js");
+  const { PDFDocument } = await import("./pdf-lib.esm.min.js");
   const out = await PDFDocument.create();
   const A4 = [595.28, 841.89];
   const margin = opts.margin == null ? 24 : opts.margin;
