@@ -234,7 +234,10 @@ const DICT = {
         licOk:"Pro activated", licBad:"Invalid licence key", licFmt:"Wrong format — it should look like “xxxxx.xxxxx”", licExpired:"That key has expired",
         needPro:"Pro feature — activate a licence first", invoicePro:"Invoice sheet is a Pro feature"}
 };
-let LANG = (navigator.language || "zh").toLowerCase().startsWith("zh") ? "zh" : "en";
+let LANG = (() => {
+  try { const saved = localStorage.getItem("lang"); if (saved === "zh" || saved === "en") return saved; } catch (e) {}
+  return (navigator.language || "zh").toLowerCase().startsWith("zh") ? "zh" : "en";
+})();
 const T = (k, a) => { const s = DICT[LANG][k] != null ? DICT[LANG][k] : (DICT.zh[k] || k); return a ? s.replace(/\{(\d+)\}/g, (m, i) => (a[+i] != null ? a[+i] : m)) : s; };
 function applyLang() {
   document.documentElement.lang = LANG === "zh" ? "zh-CN" : "en";
