@@ -1,8 +1,8 @@
 // PDF 的核心操作。浏览器和 Node 共用：只依赖 pdf-lib，不碰 DOM。
 // 所有处理都在本地完成——不上传、不落第三方服务器。
-import { PDFDocument, degrees } from "./pdf-lib.esm.min.js";
+import { PDFDocument, degrees } from "../vendor/pdf-lib.esm.min.js";
 
-export const LIMITS = { free: { files: 3, pages: 50, batch: false }, pro: { files: 999, pages: 99999, batch: true } };
+export const LIMITS = { free: { files: 999, pages: 99999, batch: true }, pro: { files: 999, pages: 99999, batch: true } };
 
 export function parseRanges(spec, max) {
   // "1-3,5,8-10" → [0,1,2,4,7,8,9]（返回 0 基下标，去重保序）
@@ -21,12 +21,17 @@ export function parseRanges(spec, max) {
   return out;
 }
 
-export async function merge(buffers) {
+
+export async function merge(buffers, cb) {
   const out = await PDFDocument.create();
+  let k = 0;
   for (const buf of buffers) {
     const src = await PDFDocument.load(buf, { ignoreEncryption: true });
     const pages = await out.copyPages(src, src.getPageIndices());
     pages.forEach(p => out.addPage(p));
+    k += 1;
+    if (cb) cb(k, buffers.length);
+    await new Promise(r => setTimeout(r, 0)); // 让出一帧，进度条才能刷新
   }
   out.setProducer("PDFPocket");
   out.setCreator("PDFPocket");
@@ -43,7 +48,7 @@ export async function extract(buf, spec) {
   return out.save({ useObjectStreams: true });
 }
 
-export async function splitEvery(buf, n) {
+export async function splitEvery(buf, n, cb) {
   const src = await PDFDocument.load(buf, { ignoreEncryption: true });
   const total = src.getPageCount();
   const step = Math.max(1, Math.min(n, total));
@@ -55,21 +60,38 @@ export async function splitEvery(buf, n) {
     const pages = await out.copyPages(src, idx);
     pages.forEach(p => out.addPage(p));
     parts.push({ name: `part-${String(parts.length + 1).padStart(2, "0")}.pdf`, bytes: await out.save() });
+    if (cb) cb(parts.length, Math.ceil(total / step));
+    await new Promise(r => setTimeout(r, 0));
   }
   return parts;
 }
 
-export async function rotate(buf, spec, deg) {
+export async function rotate(buf, spec, deg, cb) {
   const src = await PDFDocument.load(buf, { ignoreEncryption: true });
   const idx = spec ? parseRanges(spec, src.getPageCount()) : src.getPageIndices();
-  idx.forEach(i => {
+  let k = 0;
+  for (const i of idx) {
     const page = src.getPage(i);
     page.setRotation(degrees(((page.getRotation().angle || 0) + deg) % 360));
-  });
+    k += 1;
+    if (cb && (k % 10 === 0 || k === idx.length)) cb(k, idx.length);
+  }
   return src.save({ useObjectStreams: true });
 }
 
 export async function info(buf) {
+  // 加密的 PDF 不能"假装能处理"：先按严格模式载入，密码保护就明确报错
+  try {
+    await PDFDocument.load(buf);
+  } catch (e) {
+    const m = String((e && e.message) || e);
+    // pdf-lib 对加密文件有时只回「Failed to parse」，靠 /Encrypt 关键字判断更可靠
+    const bytes = buf instanceof Uint8Array ? buf : new Uint8Array(buf);
+    const head = new TextDecoder("latin1").decode(bytes.slice(0, 4096));
+    const tail = new TextDecoder("latin1").decode(bytes.slice(Math.max(0, bytes.length - 4096)));
+    if (/encrypt/i.test(m) || /\/Encrypt\b/.test(head + tail)) throw new Error("ENCRYPTED_PDF");
+    // 其它解析错误照常抛给上层
+  }
   const doc = await PDFDocument.load(buf, { ignoreEncryption: true });
   return { pages: doc.getPageCount(), title: doc.getTitle() || "" };
 }
@@ -106,7 +128,7 @@ async function watermarkPng(text, size) {
 }
 
 export async function watermark(buf, text, opts = {}) {
-  const { PDFDocument } = await import("./pdf-lib.esm.min.js");
+  const { PDFDocument } = await import("../vendor/pdf-lib.esm.min.js");
   const doc = await PDFDocument.load(buf, { ignoreEncryption: true });
   const size = opts.size || 34;
   const png = await watermarkPng(text, size * 2);
@@ -126,8 +148,8 @@ export async function watermark(buf, text, opts = {}) {
 }
 
 // 发票拼版：多份单页 PDF → A4 每页 2 张，带裁切虚线与序号。
-export async function invoiceSheet(buffers, opts = {}) {
-  const { PDFDocument, StandardFonts, rgb } = await import("./pdf-lib.esm.min.js");
+export async function invoiceSheet(buffers, opts = {}, cb) {
+  const { PDFDocument, StandardFonts, rgb } = await import("../vendor/pdf-lib.esm.min.js");
   const out = await PDFDocument.create();
   const font = await doc0Font(out);
   const A4 = [595.28, 841.89];
@@ -141,6 +163,8 @@ export async function invoiceSheet(buffers, opts = {}) {
     src.getPages().forEach((_, i) => items.push({ buf, page: i, src }));
   }
 
+  const sheets = Math.ceil(items.length / 2);
+  let sheetNo = 0;
   for (let i = 0; i < items.length; i += 2) {
     const page = out.addPage(A4);
     for (let j = 0; j < 2 && i + j < items.length; j++) {
@@ -152,6 +176,7 @@ export async function invoiceSheet(buffers, opts = {}) {
       const y = A4[1] - margin - cellH * (j + 1) - gap * j + (cellH - height * scale) / 2;
       page.drawPage(embedded, { x, y, xScale: scale, yScale: scale });
       page.drawText(String(i + j + 1), { x: margin + 2, y: y + cellH * scale + 4, size: 8, font, color: rgb(0.5, 0.5, 0.5) });
+
     }
     // 中间裁切线
     page.drawLine({
@@ -159,19 +184,22 @@ export async function invoiceSheet(buffers, opts = {}) {
       end: { x: A4[0] - margin + 6, y: A4[1] / 2 },
       thickness: 0.4, dashArray: [3, 3], color: rgb(0.75, 0.75, 0.75),
     });
+    sheetNo += 1;
+    if (cb) cb(sheetNo, sheets);
+    await new Promise(r => setTimeout(r, 0));
   }
   out.setProducer("PDFPocket");
   return out.save({ useObjectStreams: true });
 }
 
 async function doc0Font(doc) {
-  const { StandardFonts } = await import("./pdf-lib.esm.min.js");
+  const { StandardFonts } = await import("../vendor/pdf-lib.esm.min.js");
   return doc.embedFont(StandardFonts.Helvetica);
 }
 
 // 图片 → PDF：每张图一页 A4，等比缩放居中，留 24pt 边距。支持 JPG / PNG。
-export async function imagesToPdf(items, opts = {}) {
-  const { PDFDocument } = await import("./pdf-lib.esm.min.js");
+export async function imagesToPdf(items, opts = {}, cb) {
+  const { PDFDocument } = await import("../vendor/pdf-lib.esm.min.js");
   const out = await PDFDocument.create();
   const A4 = [595.28, 841.89];
   const margin = opts.margin == null ? 24 : opts.margin;
@@ -183,6 +211,8 @@ export async function imagesToPdf(items, opts = {}) {
     const scale = Math.min(maxW / img.width, maxH / img.height, 1) || 1;
     const w = img.width * scale, h = img.height * scale;
     page.drawImage(img, { x: (A4[0] - w) / 2, y: (A4[1] - h) / 2, width: w, height: h });
+    if (cb) cb(items.indexOf(it) + 1, items.length);
+    await new Promise(r => setTimeout(r, 0));
   }
   out.setProducer("PDFPocket");
   return out.save({ useObjectStreams: true });
