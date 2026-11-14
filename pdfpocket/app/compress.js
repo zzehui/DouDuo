@@ -1,12 +1,20 @@
 // 图片重压缩：只处理 DCTDecode（JPEG）内嵌图，文字与矢量原样保留。
 const COMPRESS = { light: { maxPx: 2200, quality: 0.85 }, normal: { maxPx: 1600, quality: 0.72 }, strong: { maxPx: 1100, quality: 0.55 } };
 
-export async function compress(buf, level) {
+export async function compress(buf, level, cb) {
   const { PDFDocument, PDFName, PDFRawStream } = await import("./pdf-lib.esm.min.js");
   const cfg = COMPRESS[level] || COMPRESS.normal;
   const doc = await PDFDocument.load(buf, { ignoreEncryption: true });
   const seen = new Set();
   let touched = 0;
+  // 先数一遍，进度才有百分比
+  const cands = [...doc.context.enumerateIndirectObjects()].filter(([, o]) => {
+    if (!(o instanceof PDFRawStream)) return false;
+    const d = o.dict;
+    if ((d.lookup(PDFName.of("Subtype"))?.toString?.() || "") !== "/Image") return false;
+    const f = d.lookup(PDFName.of("Filter"))?.toString?.() || "";
+    return /DCTDecode/.test(f);
+  });
 
   for (const [ref, obj] of doc.context.enumerateIndirectObjects()) {
     if (!(obj instanceof PDFRawStream)) continue;
@@ -40,7 +48,8 @@ export async function compress(buf, level) {
     dict.set(PDFName.of("Length"), doc.context.obj(out.byteLength));
     doc.context.assign(ref, PDFRawStream.of(dict, out));
     touched++;
+    if (cb) { cb(touched, cands.length || touched); await new Promise((r) => setTimeout(r, 0)); }
   }
-  void touched;
+  if (cb && !touched) cb(1, 1);
   return doc.save({ useObjectStreams: true });
 }
