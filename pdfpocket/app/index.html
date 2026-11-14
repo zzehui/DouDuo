@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23e8a33d'/%3E%3C/svg%3E">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PDF 口袋 · 在线版（本地处理，不上传）</title>
+<title>DOUDUO PDF 口袋 · 在线版（本地处理，不上传）</title>
   <link rel="manifest" href="./manifest.webmanifest">
   <meta name="theme-color" content="#0a0d12">
   <link rel="icon" href="./icon-192.png">
@@ -51,6 +51,7 @@
 
   .pill{font-size:12px;border:1px solid #2a3648;border-radius:999px;padding:4px 10px;color:#9aa8bc}
   .pill.pro{border-color:#8a5b17;color:#f0c07a;background:#2a1c07}
+  .tab.gated{opacity:.62}
   .prodot{font-size:10px;background:#e8a33d;color:#231703;border-radius:5px;padding:1px 4px;margin-left:5px;vertical-align:middle}
   .tab.on .prodot{background:#231703;color:#f0c07a}
   .modal{position:fixed;inset:0;background:rgba(6,9,14,.72);display:grid;place-items:center;z-index:30;padding:20px}
@@ -63,7 +64,7 @@
 <body>
 <header>
   <div class="logo">PDF</div>
-  <div style="flex:1"><h1 data-t="title">PDF 口袋 · 在线版</h1><div class="sub" data-t="sub">所有处理在本机完成，文件不会离开你的电脑。</div></div>
+  <div style="flex:1"><h1 data-t="title">DOUDUO PDF 口袋 · 在线版</h1><div class="sub" data-t="sub">所有处理在本机完成，文件不会离开你的电脑。</div></div>
   <span class="pill" id="planPill">免费版</span>
   <button class="btn ghost" id="proBtn" style="padding:6px 12px;font-size:13px">激活 Pro</button>
   <button class="btn ghost" id="langBtn" style="padding:6px 12px;font-size:13px">EN</button>
@@ -72,11 +73,11 @@
 <main>
   <div class="tabs" id="tabs">
     <button class="tab on" data-mode="merge" data-t="merge">合并</button>
-    <button class="tab" data-mode="split" data-t="split">拆分</button>
-    <button class="tab" data-mode="rotate" data-t="rotate">旋转</button>
+    <button class="tab" data-mode="split" data-t="split">拆分<b class="prodot" hidden>Pro</b></button>
+    <button class="tab" data-mode="rotate" data-t="rotate">旋转<b class="prodot" hidden>Pro</b></button>
     <button class="tab" data-mode="compress" data-t="compress">压缩</button>
-    <button class="tab" data-mode="img" data-t="img">图片转 PDF</button>
-    <button class="tab pro" data-mode="invoice" data-t="invoiceTab" hidden>发票拼版<b class="prodot">Pro</b></button>
+    <button class="tab" data-mode="img" data-t="img">图片转 PDF<b class="prodot" hidden>Pro</b></button>
+    <button class="tab" data-mode="invoice" data-t="invoiceTab">发票拼版<b class="prodot">Pro</b></button>
   </div>
 
   <div class="drop" id="drop">
@@ -89,12 +90,12 @@
 
   <div class="opt on" id="opt-merge">
     <div class="row"><span class="hint" data-t="mergeHint">按列表顺序合并；拖拽排序请在扩展版里用 ↑↓</span></div>
-    <div class="row pro" id="wmWrap" hidden>
+    <div class="row" id="wmWrap">
       <label><input type="checkbox" id="wmOn"> <span data-t="wmLabel">加水印</span></label>
       <input type="text" id="wmText" maxlength="40" placeholder="内部资料 / 样例">
     </div>
   </div>
-  <div class="opt pro" id="opt-invoice" hidden>
+  <div class="opt" id="opt-invoice">
     <div class="row"><span class="hint" data-t="invoiceHint">把多份单页 PDF（发票、凭证）拼成 A4，每页 2 张，带裁切线和序号。</span></div>
   </div>
   <div class="opt" id="opt-split">
@@ -160,7 +161,7 @@ import { verify, LICENSE_MAJOR } from "./license.js";
 const $ = (s) => document.querySelector(s);
 
 const DICT = {
-  zh: {title:"PDF 口袋 · 在线版", sub:"所有处理在本机完成，文件不会离开你的电脑。", merge:"合并", split:"拆分",
+  zh: {title:"DOUDUO PDF 口袋 · 在线版", sub:"所有处理在本机完成，文件不会离开你的电脑。", merge:"合并", split:"拆分",
         rotate:"旋转", compress:"压缩", img:"图片转 PDF", drop:"把 PDF 或图片拖进来，或点这里选择",
         dropSub:"支持多选 · 不上传 · 断网也能用 · ", demo:"用样例文件试试", noFiles:"还没有文件", run:"开始处理",
         tipA:"想要批量拆分、加水印、发票拼版？ ", tipB:"装浏览器扩展版（Pro）", working:"处理中…",
@@ -174,7 +175,7 @@ const DICT = {
         proBuy:"查看购买方式", proBuyHint:"还没有授权码？ ", planFree:"免费版", planPro:"Pro",
         licOk:"Pro 已激活", licBad:"授权码无效", licFmt:"格式不对：应该是「一串字符.一串字符」", licExpired:"这个码已过期",
         needPro:"这是 Pro 功能：先激活授权码", invoicePro:"发票拼版是 Pro 功能"},
-  en: {title:"PDF Pocket · Web", sub:"Everything runs on your machine. Your files never leave your computer.", merge:"Merge",
+  en: {title:"DOUDUO PDF Pocket · Web", sub:"Everything runs on your machine. Your files never leave your computer.", merge:"Merge",
         split:"Split", rotate:"Rotate", compress:"Compress", img:"Images to PDF", drop:"Drop PDFs or images here, or click to choose",
         dropSub:"Multiple files · no upload · works offline · ", demo:"try a sample file", noFiles:"No files yet", run:"Run",
         tipA:"Need batch split, watermark, invoice sheets? ", tipB:"get the extension (Pro)", working:"Working…",
@@ -205,7 +206,15 @@ const state = { mode: "merge", files: [], plan: "free", email: "", major: 0 };
 
 function applyPlan() {
   const pro = state.plan === "pro";
-  document.querySelectorAll(".pro").forEach((el) => { el.hidden = !pro; });
+  document.querySelectorAll(".tab").forEach((t2) => {
+    const gated = GATED.includes(t2.dataset.mode);
+    const badge = t2.querySelector(".prodot");
+    if (badge) badge.hidden = pro || !gated;
+    t2.classList.toggle("gated", gated && !pro);
+    t2.hidden = false;
+  });
+  const wmc = document.querySelector("#wmOn"); if (wmc) wmc.disabled = !pro;
+  if (!pro && GATED.includes(state.mode)) state.mode = "merge";
   const pill = $("#planPill");
   pill.textContent = pro ? T("planPro") : T("planFree");
   pill.classList.toggle("pro", pro);
@@ -254,8 +263,14 @@ input.addEventListener("change", (e) => { add([...e.target.files]); input.value 
 ["dragleave","drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
 drop.addEventListener("drop", (e) => add([...e.dataTransfer.files]));
 
+const GATED = ["split","rotate","img","invoice"];
 $("#tabs").addEventListener("click", (e) => {
   const b = e.target.closest(".tab"); if (!b) return;
+  if (state.plan !== "pro" && GATED.includes(b.dataset.mode)) {
+    e.preventDefault(); e.stopPropagation();
+    toast(T("needPro")); $("#proModal").hidden = false; $("#licInput").focus();
+    return;
+  }
   state.mode = b.dataset.mode;
   document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("on", t === b));
   document.querySelectorAll(".opt").forEach((o) => o.classList.toggle("on", o.id === "opt-" + state.mode));
