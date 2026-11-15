@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Thanks · DOUDUO PDF Pocket</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+  .box{max-width:640px;margin:0 auto;padding:70px 24px 100px}
+  h1{font-size:30px;margin:0 0 10px}
+  .lead{color:#c9d3e0;font-size:16px;line-height:1.8}
+  .card{background:#131922;border:1px solid #243044;border-radius:14px;padding:22px;margin:22px 0}
+  .card h2{font-size:16px;margin:0 0 10px}
+  .card ol{margin:0;padding-left:20px;color:#c9d3e0;line-height:1.9}
+  code{background:#0e131b;border:1px solid #243044;border-radius:6px;padding:2px 6px}
+  a{color:#e8a33d}
+  .meta{color:#8b98ab;font-size:13.5px}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>Payment received — check your inbox</h1>
+  <p class="lead">Your licence key goes to the email address you used at checkout, usually within a couple of minutes.</p>
+  <p class="meta" id="order"></p>
+
+  <div class="card">
+    <h2>If the email has not arrived</h2>
+    <ol>
+      <li>Check spam / promotions — the sender is <code>key@douduotech.com</code>.</li>
+      <li>Still nothing after 24 hours? Write to <a href="mailto:zzhlmgj@163.com">zzhlmgj@163.com</a> with the order id above. A human will send it.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>How to activate</h2>
+    <ol>
+      <li>Open the extension (or <a href="./app/">the web app</a>) and click <b>Pro</b> in the top-right.</li>
+      <li>Paste the key, click <b>Activate</b>.</li>
+      <li>The badge turns <b>Pro</b>. Works offline; paste again on another computer.</li>
+    </ol>
+  </div>
+
+  <p class="meta">Refunds within 14 days — just ask. <a href="./buy.html">Back to pricing</a></p>
+</div>
+<script>
+  const o = new URLSearchParams(location.search).get("order");
+  if (o) document.getElementById("order").textContent = "Order " + o;
+</script>
+</body>
+</html>
