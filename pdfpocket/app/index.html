@@ -329,12 +329,22 @@ function applyLang() {
       el.textContent = text;
     }
   });
+  document.querySelectorAll("[data-t-ph]").forEach((el) => { el.placeholder = T(el.dataset.tPh); });
+  document.querySelectorAll("[data-t-aria]").forEach((el) => { el.setAttribute("aria-label", T(el.dataset.tAria)); });
+  document.querySelectorAll("[data-t-title]").forEach((el) => { el.title = T(el.dataset.tTitle); });
   document.querySelectorAll("#langSeg button").forEach((b) => b.classList.toggle("on", b.dataset.lang === LANG));
+  const pb = document.querySelector("#proBtn");
+  if (pb) pb.textContent = T("proBtnLabel");
+}
+
 document.querySelectorAll("#langSeg button").forEach((b) => {
   b.addEventListener("click", () => {
     LANG = b.dataset.lang;
     try { localStorage.setItem("lang", LANG); } catch (e) {}
-    
+    applyLang(); paint();
+  });
+});
+
 /* ---------- 最近处理（IndexedDB，只存本机） ---------- */
 const RECENT_MAX = 5, RECENT_BYTES = 8 * 1024 * 1024;
 function idb() {
@@ -363,7 +373,6 @@ async function recentPut(rec) {
     tx.objectStore("files").put(rec);
     await new Promise((r) => { tx.oncomplete = r; tx.onerror = r; });
     const all = await recentAll();
-    const keep = all.slice(0, RECENT_MAX);
     const drop = all.slice(RECENT_MAX);
     if (drop.length) {
       const tx2 = db.transaction("files", "readwrite");
@@ -373,8 +382,7 @@ async function recentPut(rec) {
   } catch (e) {}
 }
 async function renderRecent() {
-  const box = document.querySelector("#recent");
-  const list = document.querySelector("#recentList");
+  const box = document.querySelector("#recent"), list = document.querySelector("#recentList");
   if (!box || !list) return;
   const all = (await recentAll()).filter((r) => r.bytes);
   box.hidden = all.length === 0;
@@ -382,8 +390,7 @@ async function renderRecent() {
   list.querySelectorAll("[data-recent]").forEach((b) => {
     b.onclick = async () => {
       const rec = all.find((x) => x.id === b.dataset.recent);
-      if (!rec) return;
-      await add([new File([rec.bytes], rec.name, { type: rec.type || "application/pdf" })]);
+      if (rec) await add([new File([rec.bytes], rec.name, { type: rec.type || "application/pdf" })]);
     };
   });
 }
@@ -398,27 +405,14 @@ function toggleKeys(force) {
   el.hidden = force === undefined ? !el.hidden : !force;
 }
 document.querySelector("#keysClose")?.addEventListener("click", () => toggleKeys(false));
-(function buildKeys() {
+function buildKeys() {
   const ul = document.querySelector("#keysList"); if (!ul) return;
   const rows = [["Ctrl / ⌘ + O", T("k1")], ["Ctrl / ⌘ + Z", T("k2")], ["Esc", T("k3")], ["Enter", T("k4")], ["?", T("k5")]];
   ul.innerHTML = rows.map(([k, d]) => `<li><kbd>${k}</kbd>${d}</li>`).join("");
-})();
+}
 document.addEventListener("keydown", (e) => {
   if (e.key === "?" && !/input|textarea/i.test(document.activeElement.tagName)) { e.preventDefault(); toggleKeys(); }
 });
-
-applyLang();
-renderRecent();
-(() => {
-  const o = document.querySelector("#outName");
-  if (o) o.addEventListener("input", () => { state.outTouched = o.value.trim().length > 0; });
-})();
-  });
-});
-  const pb = document.querySelector("#proBtn");
-  if (pb) pb.textContent = T("proBtnLabel");
-  paint();
-}
 
 const state = {
   outTouched: false, mode: "merge", files: [], plan: "free", email: "", major: 0 };
@@ -754,6 +748,8 @@ $("#runBtn").addEventListener("click", async () => {
 
 
 applyLang();
+buildKeys();
+renderRecent();
 bootLicense();
 applyPlan();
 
