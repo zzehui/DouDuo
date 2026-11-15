@@ -181,7 +181,7 @@ background:transparent;border:1px solid var(--line);color:var(--dim);border-radi
   <div class="opt on" id="opt-merge">
     <div class="row"><span class="hint" data-t="mergeHint">按列表顺序合并；拖拽排序请在扩展版里用 ↑↓</span></div>
     <div class="row" id="wmWrap">
-      <label><input type="checkbox" id="wmOn"> <span data-t="wmLabel">加水印</span></label>
+      <label id="wmLabelWrap"><input type="checkbox" id="wmOn"> <span data-t="wmLabel">加水印</span><b class="prodot" id="wmProBadge" hidden>Pro</b></label>
       <input type="text" id="wmText" maxlength="40" data-t-ph="wmPh" placeholder="内部资料">
     </div>
     <div class="row" id="outWrap">
@@ -451,7 +451,10 @@ function applyPlan() {
     t2.classList.toggle("gated", gated && !pro);
     t2.hidden = false;
   });
-  const wmc = document.querySelector("#wmOn"); if (wmc) wmc.disabled = !pro;
+  const wmc = document.querySelector("#wmOn");
+  if (wmc) { wmc.checked = pro && wmc.checked; }
+  const wmt = document.querySelector("#wmText"); if (wmt) wmt.readOnly = !pro;
+  const wmb = document.querySelector("#wmProBadge"); if (wmb) wmb.hidden = pro;
   if (!pro && GATED.includes(state.mode)) state.mode = "merge";
   const pill = $("#planPill");
   pill.textContent = pro ? T("planPro") : T("planFree");
@@ -495,6 +498,13 @@ $("#licBtn").addEventListener("click", async () => {
   $("#proModal").hidden = true;
   toast(T("licOk"));
 });
+
+document.querySelector("#wmWrap")?.addEventListener("click", (e) => {
+  if (state.plan === "pro") return;
+  e.preventDefault(); e.stopPropagation();
+  const c = document.querySelector("#wmOn"); if (c) c.checked = false;
+  toast(T("needPro")); $("#proModal").hidden = false; $("#licInput").focus();
+}, true);
 
 const drop = $("#drop"), input = $("#fileInput");
 drop.addEventListener("click", () => input.click());
