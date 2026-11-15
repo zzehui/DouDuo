@@ -13,9 +13,9 @@
   <meta name="apple-mobile-web-app-title" content="PDF 口袋">
 <script src="./theme.js"></script>
 <style>
-  :root{--bg:#0b0e14;--card:#131922;--line:#212c3a;--txt:#e8eef7;--dim:#8b9bb4;--amber:#e8a33d;--amber-d:#231703;
+  :root{--bg:#0b0e14;--card:#131922;--line:#212c3a;--txt:#e8eef7;--dim:#8b9bb4;--amber:#e8a33d;--amber-ink:#f0c07a;--amber-d:#231703;
         --input:#0d131b;--bar:#0d131b;--drop:#0f141c;--drop-over:#151c26;--toast:#1b2432;--shadow:rgba(0,0,0,.45)}
-  html[data-theme="light"]{--bg:#f5f7fa;--card:#ffffff;--line:#dfe5ee;--txt:#101828;--dim:#5b6a80;
+  html[data-theme="light"]{--amber:#e8a33d;--amber-ink:#8a5a10;--bg:#f5f7fa;--card:#ffffff;--line:#dfe5ee;--txt:#101828;--dim:#5b6a80;
         --input:#ffffff;--bar:#ffffff;--drop:#fafbfd;--drop-over:#f0f4fa;--toast:#ffffff;--shadow:rgba(15,23,42,.12)}
   html.theme-switching *{transition:none!important}
   *{box-sizing:border-box}
@@ -38,14 +38,14 @@
   input[type=text],input[type=number],select{background:var(--input);border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:8px 10px;font-size:14px}
   .tabs{display:flex;gap:8px;margin:16px 0 4px;flex-wrap:wrap}
   .tab{background:var(--card);border:1px solid var(--line);color:var(--dim);border-radius:10px;padding:8px 14px;cursor:pointer;font-size:14px}
-  .tab.on{background:var(--amber);color:var(--amber-d);border-color:var(--amber);font-weight:700}
+  .tab.on{background:var(--amber);color:var(--amber-d);border-color:var(--amber-ink);font-weight:700}
   .bar{position:fixed;left:0;right:0;bottom:0;background:var(--bar);border-top:1px solid var(--line);padding:10px 22px;display:flex;justify-content:space-between;align-items:center}
   .hint{color:var(--dim);font-size:12.5px}
   #toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:var(--toast);border:1px solid var(--line);padding:9px 16px;border-radius:10px;font-size:13.5px}
   .opt{display:none}
   .opt.on{display:block}
   footer.tip{padding:26px 0 90px;color:var(--dim);font-size:12.5px;text-align:center}
-  a{color:var(--amber)}
+  a{color:var(--amber-ink)}
 
   .folderbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0 8px}
   .folderbar .hint{color:var(--dim);font-size:13px;margin:0}
@@ -102,6 +102,15 @@
   #proActions{background:none;border:0;padding:0;margin-top:4px}
   .feats{margin:2px 0 8px;padding-left:18px;color:var(--dim);font-size:13px;line-height:1.75}
   .feats li{margin:2px 0}
+
+  .iconbtn, .tab, .seg button{min-height:44px}
+  .iconbtn{min-width:44px;display:inline-flex;align-items:center;justify-content:center}
+  a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,label:focus-visible{
+    outline:2px solid var(--amber);outline-offset:2px;border-radius:8px}
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;
+      transition-duration:.001ms !important;scroll-behavior:auto !important}
+  }
 </style>
 </head>
 <body>
