@@ -95,6 +95,10 @@
     #prog{bottom:70px;width:92vw}
   }
   [hidden]{display:none!important}
+  #files .file{cursor:grab}
+  #files .file.dragging{opacity:.45}
+  #files .file.over{outline:2px dashed var(--amber);outline-offset:2px}
+  #advWrap label{display:inline-flex;align-items:center;gap:7px;color:var(--dim);font-size:13px}
   #proActions{background:none;border:0;padding:0;margin-top:4px}
   .feats{margin:2px 0 8px;padding-left:18px;color:var(--dim);font-size:13px;line-height:1.75}
   .feats li{margin:2px 0}
@@ -135,6 +139,10 @@
     <div class="row" id="wmWrap">
       <label><input type="checkbox" id="wmOn"> <span data-t="wmLabel">加水印</span></label>
       <input type="text" id="wmText" maxlength="40" data-t-ph="wmPh" placeholder="内部资料">
+    </div>
+    <div class="row" id="advWrap">
+      <label title=""><input type="checkbox" id="padEven"> <span data-t="padEven">双面打印：奇数页补空白页</span></label>
+      <label><input type="checkbox" id="unify"> <span data-t="unifySize">统一成 A4 尺寸</span></label>
     </div>
   </div>
   <div class="opt" id="opt-invoice">
@@ -219,7 +227,9 @@ const DICT = {
         merged:"合并并下载", splitBtn:"拆分并下载", rotBtn:"旋转并下载", compBtn:"压缩并下载", imgBtn:"转成 PDF",
         added:"已加入样例.pdf（3 页）", fail:"处理失败：", noImg:"先加几张图片", demoFail:"样例加载失败：",
         splitOne:"份，在线版只下载第一份；批量导出请用扩展版", badRange:"页码写错了", unit:" 个文件 · ",
-        mergeHint:"按列表顺序合并，用 ↑↓ 调顺序",
+        mergeHint:"按列表顺序合并；可拖拽行调整顺序，也可用 ↑↓",
+        padEven:"双面打印：奇数页补空白页", unifySize:"统一成 A4 尺寸",
+        removedOne:"已移除 {0}", undo:"撤销", undone:"已撤销",
         pagesUnit:"页", unitFiles:"个文件", unitPages:"页", unitImages:"张图", unitParts:"份", up:"上移", down:"下移", invBtn:"拼版并下载", splitHint:"每 N 页切一份，或只取指定页（1-3,5）", imgHint:"每张图一页 A4，等比缩放居中，最多 5 张", compHint:"重压缩内嵌图片，文字与矢量保持清晰",
         pwaHint:"装到桌面，下次点图标直接打开", pwaInstall:"安装到桌面", pwaDone:"已安装，桌面见", folder:"合并整个文件夹…", folderPick:"选一个文件夹，把里面所有 PDF 按文件名顺序合成一个", folderNone:"这个文件夹里没有 PDF", demoName:"样例.pdf", folderDone:"已加入 {0} 个 PDF", folderNoSupport:"这个浏览器不支持选文件夹，请用「选择 PDF」多选", pwaManual:"没有安装入口？用地址栏右侧的安装图标",
         invoiceTab:"发票拼版", invoiceHint:"把多份单页 PDF（发票、凭证）拼成 A4，每页 2 张，带裁切线和序号。", wmLabel:"加水印", wmPh:"内部资料", wmDefault:"内部资料",
@@ -235,7 +245,9 @@ const DICT = {
         merged:"Merge & download", splitBtn:"Split & download", rotBtn:"Rotate & download", compBtn:"Compress & download", imgBtn:"Convert to PDF",
         added:"sample.pdf added (3 pages)", fail:"Failed: ", noImg:"add some images first", demoFail:"Sample failed: ",
         splitOne:" parts — web version downloads the first only; batch export is in the extension", badRange:"bad page range", unit:" files · ",
-        mergeHint:"Files merge in list order — use ↑↓ to reorder",
+        mergeHint:"Merge in list order — drag a row, or use ↑↓",
+        padEven:"Double-sided: pad odd files with a blank page", unifySize:"Normalise every page to A4",
+        removedOne:"Removed {0}", undo:"Undo", undone:"Undone",
         pagesUnit:"pages", unitFiles:" files", unitPages:" pages", unitImages:" images", unitParts:" parts", up:"Move up", down:"Move down", invBtn:"Build sheet & download", splitHint:"Split every N pages, or take specific pages (1-3,5)", imgHint:"One A4 page per image, scaled to fit. Max 5 images.", compHint:"Re-compresses embedded images; text and vectors stay crisp.",
         pwaHint:"Install to desktop — open it next time without typing a URL", pwaInstall:"Install to desktop", pwaDone:"Installed — check your desktop", folder:"Merge a whole folder…", folderPick:"Pick a folder; every PDF in it is merged in name order", folderNone:"No PDFs in that folder", demoName:"sample.pdf", folderDone:"Added {0} PDFs", folderNoSupport:"This browser can't pick a folder — use Choose PDFs", pwaManual:"No install prompt — use the install icon in the address bar",
         invoiceTab:"Invoice sheet", invoiceHint:"Lay single-page PDFs (invoices, receipts) onto A4, 2 per page, with cut lines and numbering.", wmLabel:"Add watermark", wmPh:"CONFIDENTIAL", wmDefault:"CONFIDENTIAL",
@@ -399,6 +411,8 @@ paint();
 
 function human(b) { return b > 1048576 ? (b/1048576).toFixed(1)+" MB" : b > 1024 ? Math.round(b/1024)+" KB" : b+" B"; }
 
+let lastRemoved = null;
+
 function paint() {
   const rows = state.files.map((f, i) => `
     <div class="file">
@@ -412,11 +426,34 @@ function paint() {
       <button class="btn ghost" data-x="${i}" style="padding:4px 9px">×</button>
     </div>`).join("");
   $("#files").innerHTML = rows;
-  document.querySelectorAll("[data-x]").forEach((b) => { b.onclick = () => { state.files.splice(+b.dataset.x, 1); paint(); }; });
+  document.querySelectorAll("[data-x]").forEach((b) => { b.onclick = () => {
+    const i = +b.dataset.x;
+    const [removed] = state.files.splice(i, 1);
+    lastRemoved = { file: removed, index: i };
+    paint();
+    toastAction(T("removedOne", [removed.name]), T("undo"), () => { state.files.splice(i, 0, removed); paint(); });
+  }; });
   document.querySelectorAll("[data-up]").forEach((b) => { b.onclick = () => {
     const i = +b.dataset.up; if (i > 0) { [state.files[i - 1], state.files[i]] = [state.files[i], state.files[i - 1]]; paint(); } }; });
   document.querySelectorAll("[data-down]").forEach((b) => { b.onclick = () => {
     const i = +b.dataset.down; if (i < state.files.length - 1) { [state.files[i + 1], state.files[i]] = [state.files[i], state.files[i + 1]]; paint(); } }; });
+
+  // 拖拽排序（桌面）+ 长按拖动（手机靠 ↑↓）
+  let dragFrom = -1;
+  document.querySelectorAll("#files .file").forEach((row, i) => {
+    row.draggable = true;
+    row.addEventListener("dragstart", (e) => { dragFrom = i; row.classList.add("dragging"); e.dataTransfer.effectAllowed = "move"; });
+    row.addEventListener("dragend", () => { row.classList.remove("dragging"); document.querySelectorAll("#files .file").forEach((r) => r.classList.remove("over")); });
+    row.addEventListener("dragover", (e) => { e.preventDefault(); row.classList.add("over"); });
+    row.addEventListener("dragleave", () => row.classList.remove("over"));
+    row.addEventListener("drop", (e) => {
+      e.preventDefault(); e.stopPropagation();
+      if (dragFrom < 0 || dragFrom === i) return;
+      const [m] = state.files.splice(dragFrom, 1);
+      state.files.splice(i, 0, m);
+      dragFrom = -1; paint();
+    });
+  });
 
   const pages = state.files.reduce((a, f) => a + f.pages, 0);
   const size = state.files.reduce((a, f) => a + f.size, 0);
@@ -457,6 +494,28 @@ function toast(msg) {
   clearTimeout(tt); tt = setTimeout(() => el.hidden = true, 4200);
 }
 
+// 带一个动作按钮的提示（用于「已删除 · 撤销」）
+function toastAction(msg, actionLabel, onAction) {
+  const el = $("#toast");
+  el.textContent = "";
+  const span = document.createElement("span"); span.textContent = msg;
+  const btn = document.createElement("button");
+  btn.className = "btn ghost"; btn.textContent = actionLabel;
+  btn.style.cssText = "margin-left:12px;padding:4px 10px;font-size:13px";
+  btn.onclick = () => { el.hidden = true; clearTimeout(tt); onAction(); };
+  el.append(span, btn); el.hidden = false;
+  clearTimeout(tt); tt = setTimeout(() => (el.hidden = true), 8000);
+}
+
+document.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z" && lastRemoved) {
+    e.preventDefault();
+    state.files.splice(lastRemoved.index, 0, lastRemoved.file);
+    lastRemoved = null; paint(); toast(T("undone"));
+  }
+  if (e.key === "Escape") document.querySelectorAll(".modal").forEach((m) => (m.hidden = true));
+});
+
 $("#runBtn").addEventListener("click", async () => {
   const btn = $("#runBtn"); btn.disabled = true; const old = btn.textContent; btn.textContent = T("working");
   progStart(T("working"));
@@ -468,7 +527,11 @@ $("#runBtn").addEventListener("click", async () => {
         const txt = (document.querySelector("#wmText").value || "").trim() || T("wmDefault");
         buffers = await Promise.all(buffers.map((b) => watermark(b, txt)));
       }
-      download(await merge(buffers, (d, t2) => progSet(d, t2, T("unitFiles"))), "merged.pdf");
+      const opts = {
+        padEven: document.querySelector("#padEven").checked,
+        uniform: document.querySelector("#unify").checked,
+      };
+      download(await merge(buffers, opts, (d, t2) => progSet(d, t2, T("unitFiles"))), "merged.pdf");
     } else if (state.mode === "split") {
       const mode = document.querySelector('input[name="sm"]:checked').value;
       if (mode === "range") download(await extract(state.files[0].buf, $("#splitRange").value.trim()), "extracted.pdf");

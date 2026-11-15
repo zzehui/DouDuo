@@ -22,16 +22,47 @@ export function parseRanges(spec, max) {
 }
 
 
-export async function merge(buffers, cb) {
+const A4 = [595.28, 841.89];
+
+// merge(buffers, [opts], [cb])
+// opts.padEven   双面打印：奇数页的文件末尾补一张同尺寸空白页
+// opts.uniform   统一页面尺寸为 A4（等比缩放居中，不裁切）
+export async function merge(buffers, opts, cb) {
+  if (typeof opts === "function") { cb = opts; opts = {}; }
+  opts = opts || {};
   const out = await PDFDocument.create();
   let k = 0;
   for (const buf of buffers) {
     const src = await PDFDocument.load(buf, { ignoreEncryption: true });
-    const pages = await out.copyPages(src, src.getPageIndices());
-    pages.forEach(p => out.addPage(p));
+    if (opts.uniform) {
+      const embedded = await out.embedPages(src.getPages());
+      for (const ep of embedded) {
+        const page = out.addPage(A4);
+        const { width, height } = ep.size();
+        const scale = Math.min(A4[0] / width, A4[1] / height);
+        page.drawPage(ep, {
+          x: (A4[0] - width * scale) / 2,
+          y: (A4[1] - height * scale) / 2,
+          xScale: scale, yScale: scale,
+        });
+      }
+    } else {
+      const pages = await out.copyPages(src, src.getPageIndices());
+      pages.forEach((p) => out.addPage(p));
+    }
+    if (opts.padEven) {
+      const n = src.getPageCount();
+      if (n % 2 === 1) {
+        if (opts.uniform) out.addPage(A4);
+        else {
+          const last = src.getPage(n - 1).getSize();
+          out.addPage([last.width, last.height]);
+        }
+      }
+    }
     k += 1;
     if (cb) cb(k, buffers.length);
-    await new Promise(r => setTimeout(r, 0)); // 让出一帧，进度条才能刷新
+    await new Promise((r) => setTimeout(r, 0)); // 让出一帧，进度条才能刷新
   }
   out.setProducer("PDFPocket");
   out.setCreator("PDFPocket");
