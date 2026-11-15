@@ -96,6 +96,8 @@
   }
   [hidden]{display:none!important}
   #proActions{background:none;border:0;padding:0;margin-top:4px}
+  .feats{margin:2px 0 8px;padding-left:18px;color:var(--dim);font-size:13px;line-height:1.75}
+  .feats li{margin:2px 0}
 </style>
 </head>
 <body>
@@ -178,6 +180,11 @@
 <div class="modal" id="proModal" hidden>
   <div class="card">
     <h3 data-t="proTitle">激活 Pro</h3>
+    <ul class="feats">
+      <li data-t="proFeat1">解锁拆分、旋转、图片转 PDF</li>
+      <li data-t="proFeat2">发票拼版、加文字水印</li>
+      <li data-t="proFeat3">一次买断，后续新功能全包</li>
+    </ul>
     <p class="hint" data-t="proBody">粘贴购买后收到的授权码。离线校验，不联网。</p>
     <input id="licInput" placeholder="xxxxx.xxxxx" autocomplete="off">
     <div class="row" id="proActions" style="justify-content:flex-end">
@@ -218,6 +225,7 @@ const DICT = {
         invoiceTab:"发票拼版", invoiceHint:"把多份单页 PDF（发票、凭证）拼成 A4，每页 2 张，带裁切线和序号。", wmLabel:"加水印", wmPh:"内部资料", wmDefault:"内部资料",
         proTitle:"激活 Pro", proBtnLabel:"激活 Pro", proBody:"粘贴购买后收到的授权码。离线校验，不联网。", activate:"激活", close:"关闭",
         proBuy:"查看购买方式", proBuyHint:"还没有授权码？ ", planFree:"免费版", planPro:"Pro",
+        proFeat1:"解锁拆分、旋转、图片转 PDF", proFeat2:"发票拼版、加文字水印", proFeat3:"一次买断，后续新功能全包",
         licOk:"Pro 已激活", licBad:"授权码无效", licFmt:"格式不对：应该是「一串字符.一串字符」", licExpired:"这个码已过期",
         needPro:"这是 Pro 功能：先激活授权码", invoicePro:"发票拼版是 Pro 功能"},
   en: {title:"DOUDUO PDF Pocket · Web", sub:"Everything runs on your machine. Your files never leave your computer.", merge:"Merge",
@@ -233,6 +241,7 @@ const DICT = {
         invoiceTab:"Invoice sheet", invoiceHint:"Lay single-page PDFs (invoices, receipts) onto A4, 2 per page, with cut lines and numbering.", wmLabel:"Add watermark", wmPh:"CONFIDENTIAL", wmDefault:"CONFIDENTIAL",
         proTitle:"Activate Pro", proBtnLabel:"Activate Pro", proBody:"Paste the licence key you received. Verified offline, no network.", activate:"Activate", close:"Close",
         proBuy:"See how to buy", proBuyHint:"No key yet? ", planFree:"Free", planPro:"Pro",
+        proFeat1:"Unlock Split, Rotate, Images to PDF", proFeat2:"Invoice sheets and text watermarks", proFeat3:"One payment, all future features included",
         licOk:"Pro activated", licBad:"Invalid licence key", licFmt:"Wrong format — it should look like “xxxxx.xxxxx”", licExpired:"That key has expired",
         needPro:"Pro feature — activate a licence first", invoicePro:"Invoice sheet is a Pro feature"}
 };
