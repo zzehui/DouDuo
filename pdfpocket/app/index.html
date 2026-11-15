@@ -155,7 +155,15 @@ background:transparent;border:1px solid var(--line);color:var(--dim);border-radi
 
   <div class="opt on" id="opt-merge">
     <div class="row"><span class="hint" data-t="mergeHint">按列表顺序合并；拖拽排序请在扩展版里用 ↑↓</span></div>
-    <div class="row" id="wmWrap">
+    <section class="result" id="result" hidden aria-live="polite">
+  <div class="rtext"><b id="rName"></b><span id="rMeta"></span></div>
+  <div class="ractions">
+    <button class="btn ghost" id="rAgain" data-t="again">继续处理</button>
+    <button class="btn" id="rDl" data-t="dlAgain">再下载一次</button>
+  </div>
+</section>
+
+<div class="row" id="wmWrap">
       <label><input type="checkbox" id="wmOn"> <span data-t="wmLabel">加水印</span></label>
       <input type="text" id="wmText" maxlength="40" data-t-ph="wmPh" placeholder="内部资料">
     </div>
@@ -226,14 +234,6 @@ background:transparent;border:1px solid var(--line);color:var(--dim);border-radi
     <p class="hint"><span data-t="proBuyHint">还没有授权码？</span><a id="buyLink" href="../../buy.html" target="_blank" data-t="proBuy">查看购买方式</a></p>
   </div>
 </div>
-<section class="result" id="result" hidden aria-live="polite">
-  <div class="rtext"><b id="rName"></b><span id="rMeta"></span></div>
-  <div class="ractions">
-    <button class="btn ghost" id="rAgain" data-t="again">继续处理</button>
-    <button class="btn" id="rDl" data-t="dlAgain">再下载一次</button>
-  </div>
-</section>
-
 <div id="prog" hidden>
   <div id="progText"><span id="progLabel" data-t="working">处理中…</span><span id="progCount"></span></div>
   <div id="progTrack"><div id="progFill"></div></div>
