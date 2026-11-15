@@ -51,3 +51,17 @@ ul.plain b{color:var(--tx)}
 @media (max-width:560px){.vision{font-size:26px}.wrap{padding:32px 18px 80px}nav{gap:14px;margin-bottom:44px}}
 @media (hover:none){.themebtn{width:44px;height:44px;font-size:17px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ---------- 产品页 ---------- */
+.eyebrow{font-size:13px;color:var(--dim);letter-spacing:.4px;margin:0 0 10px;font-weight:600}
+.cta-row{display:flex;gap:10px;flex-wrap:wrap;margin:26px 0 8px}
+.btn{display:inline-block;background:var(--amber);color:var(--tag);font-weight:700;text-decoration:none;padding:12px 22px;border-radius:11px;font-size:14.5px;border:1px solid transparent;transition:transform .15s,border-color .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn.ghost{background:transparent;color:var(--tx);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--amber);color:var(--amber-ink)}
+.prose table{width:100%;border-collapse:collapse;font-size:14.5px;margin:6px 0 4px}
+.prose th,.prose td{border-bottom:1px solid var(--line);padding:9px 6px;text-align:left}
+.prose th{color:var(--dim);font-weight:500;font-size:13px}
+.prose code{background:var(--ghost);border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:12.5px}
+.warn{background:var(--panel);border:1px solid var(--amber);border-radius:14px;padding:16px 18px;color:var(--tx);font-size:13.5px}
+.warn a{color:var(--amber-ink)}

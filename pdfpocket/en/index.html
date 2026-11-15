@@ -1,50 +1,44 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PDF Pocket — merge, split, rotate, compress PDFs locally</title>
-<style>
-  :root{--bg:#0b0e13;--card:#141a22;--line:#232d3a;--txt:#e8eef7;--dim:#93a1b3;--amber:#e8a33d;--amber-d:#2a1c07}
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.7 -apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif}
-  .wrap{max-width:880px;margin:0 auto;padding:56px 22px 80px}
-  .logo{display:flex;align-items:center;gap:12px;margin-bottom:28px}
-  .logo i{width:44px;height:44px;border-radius:11px;background:var(--amber);display:grid;place-items:center;font-style:normal;font-weight:800;color:#231703;font-size:20px}
-  h1{font-size:34px;line-height:1.3;margin:0 0 10px}
-  h2{font-size:20px;margin:44px 0 12px}
-  p{margin:8px 0}
-  .sub{color:var(--dim);font-size:17px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;margin:18px 0}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  @media(max-width:680px){.grid{grid-template-columns:1fr}h1{font-size:26px}}
-  .btn{display:inline-block;background:var(--amber);color:var(--amber-d);font-weight:700;text-decoration:none;padding:14px 26px;border-radius:12px}
-  .btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
-  table{width:100%;border-collapse:collapse;font-size:15px}
-  td,th{border-bottom:1px solid var(--line);padding:10px 6px;text-align:left}
-  th{color:var(--dim);font-weight:500}
-  .tag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;background:#1d2733;color:var(--dim);margin-left:8px}
-  code{background:#0e141b;border:1px solid var(--line);border-radius:6px;padding:2px 6px;font-size:13px}
-  .warn{background:#221a0d;border:1px solid #5a4527;color:#f2c684}
-  footer{color:var(--dim);font-size:13px;margin-top:52px}
-</style></head>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DOUDUO PDF Pocket · merge, split, rotate, compress locally</title>
+<meta name="description" content="Merge and compress PDFs in your browser. Pro adds split, rotate, images to PDF, invoice sheets and watermarks. Nothing is uploaded.">
+<link rel="icon" href="app/icon-192.png">
+<script>(function(){try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";}document.documentElement.dataset.theme=t;}catch(e){}})();</script>
+<link rel="stylesheet" href="../../style.css">
+</head>
 <body>
 <div class="wrap">
-  <div class="logo"><i>PDF</i><strong>DOUDUO PDF Pocket</strong></div>
+  <nav>
+    <span class="brand"><span class="dot">D</span>DOUDUO</span>
+    <a href="../../">Home</a><a href="../../products/" class="on">Products</a><a href="../../about/">About</a>
+    <span class="sp"></span>
+    <a href="./">中文</a>
+    <button class="themebtn" id="themeBtn" type="button" aria-label="切换深浅主题" title="切换深浅主题">☾</button>
+  </nav>
 
-  <div class="hero-cta"><a class="btn ghost" href="../app/">No install — use it right in your browser →</a></div>
-  <h1>Merge, split, rotate, compress.<br>Your files never leave your computer.</h1>
-  <p class="sub">A browser extension. No upload, no account, no limits with Pro.</p>
+  <p class="eyebrow">DOUDUO PDF Pocket</p>
+  <p class="vision">Merge, split, rotate, compress.<br>Your files never leave your computer.</p>
+  <p class="lede">A browser extension or the web app — no install, no upload, no account. Merge and compress are free, without limits.</p>
 
-  <p style="margin:26px 0">
-    <a class="btn" href="https://microsoftedge.microsoft.com/addons/detail/jnemfifaohidaggafoebhdkhjhbnjcpl">Get it for Edge (free)</a>
-    <a class="btn ghost" href="#buy" style="margin-left:10px">See Pro</a>
-    <a class="btn ghost" href="../index.html" style="margin-left:10px">中文</a>
+  <p class="cta-row">
+    <a class="btn" href="../app/">Use the web app</a>
+    <a class="btn ghost" href="../download/">Download the extension</a>
+    <a class="btn ghost" href="../buy.html">Pro</a>
+    <a class="btn ghost" href="manual/">User guide</a>
   </p>
 
-  <h2>Why not a web service?</h2>
+  <div class="prose">
+  <h2 class="sec">Why nothing is uploaded</h2>
   <div class="card">
-    <p>Because online PDF tools upload your contracts, invoices and resumes <b>to someone else's server</b>. We do the opposite: everything is processed inside your browser, and it keeps working with the network unplugged.</p>
-    <p class="sub">Install it, pull your network cable, and try — every feature still works.</p>
+    <p>Most online PDF tools upload your contracts, invoices and resumes <b>to someone else's server</b>. We do the opposite: <b>everything runs inside your browser</b>, and the file never leaves your machine.</p>
+    <p>The web app and the extension share the same local code. Install it, unplug the network, try again — every feature still works.</p>
   </div>
 
-  <h2>What the free version does</h2>
+  <h2 class="sec">What the free version does</h2>
+  <div class="card">
   <table>
     <tr><th>Feature</th><th>Free</th><th>Pro</th></tr>
     <tr><td>Merge</td><td>✅ no file or page limit</td><td>✅</td></tr>
@@ -52,41 +46,61 @@
     <tr><td>Split / extract</td><td>—</td><td>✅ batch export</td></tr>
     <tr><td>Rotate</td><td>—</td><td>✅</td></tr>
     <tr><td>Images to PDF</td><td>—</td><td>✅</td></tr>
-    <tr><td>Text watermark</td><td>—</td><td>✅ (English/Chinese)</td></tr>
-    <tr><td>Invoice sheet (2 per A4 page)</td><td>—</td><td>✅ (cut lines, numbering)</td></tr>
+    <tr><td>Text watermark</td><td>—</td><td>✅ English / Chinese</td></tr>
+    <tr><td>Invoice sheet (2 per A4)</td><td>—</td><td>✅ cut lines, numbering</td></tr>
     <tr><td>Custom output file name</td><td>✅</td><td>✅</td></tr>
-    </table>
+  </table>
+  </div>
 
-  <h2 id="buy">Pro: 39 CNY, one-time</h2>
+  <h2 class="sec" id="buy">Pro: one-time purchase</h2>
   <div class="card">
-    <p style="font-size:22px;margin:0 0 6px"><b>39 CNY</b> <span class="tag">not a subscription</span></p>
-    <p class="sub">Buy this major version once, keep it forever. Future major upgrades are half price for existing users. No auto-renewal, no account.</p>
-    <p style="margin-top:18px">
-      <a class="btn" id="buyBtn" href="#buy">Buy (coming soon)</a>
-    </p>
-    <p class="sub" id="buyNote">Payment runs through a third-party store; you get a licence key right after paying and paste it into the extension. Re-paste it on a new computer.</p>
+    <p style="font-size:22px;margin:0 0 6px"><b>$6</b> <span class="tag ghost">not a subscription</span></p>
+    <p>Buy once, keep it. No auto-renewal, no account. Works offline on any of your own computers.</p>
+    <p class="cta-row" style="margin:16px 0 0"><a class="btn" href="../buy.html">See Pro and how to buy</a></p>
   </div>
 
-  <h2>How to activate</h2>
+  <h2 class="sec">How to activate</h2>
   <div class="card">
-    <p>1. Click the extension icon → <code>Pro</code> in the top right → paste your key → <b>Activate</b>.</p>
-    <p>2. The badge turns <code>Pro</code> and all limits disappear immediately.</p>
-    <p class="sub">The key is verified offline — no network call, no email upload. Lost it? We can reissue from your purchase record.</p>
+    <p>1. Open the extension (or the web app) → top-right <code>Pro</code> → paste the key → Activate.</p>
+    <p>2. The badge turns <code>Pro</code> and every limit disappears.</p>
+    <p>The key is verified offline — no network, no email upload. Lost it? Send us your order record.</p>
   </div>
 
-  <h2>FAQ</h2>
+  <h2 class="sec">FAQ</h2>
   <div class="card">
-    <p><b>Does it work in Chrome?</b> Yes, same package. Chrome Web Store review is pending; you can load it unpacked for now.</p>
-    <p><b>Does it upload my files secretly?</b> No. The extension requests a single permission, <code>storage</code>, and declares no network hosts.</p>
-    <p><b>Encrypted PDFs?</b> Not supported — decrypt first.</p>
-    <p><b>Can it compress scans?</b> Yes: compression re-encodes the embedded images. Text-only PDFs barely shrink (they are already small).</p>
-    <p><b>Can I get an invoice?</b> Yes, a Chinese invoice (个体户) is available on request.</p>
+    <p><b>Chrome?</b> Same package, Chrome Web Store review pending; load it manually for now.</p>
+    <p><b>Does it upload anything?</b> No. The extension asks for one permission, <code>storage</code>, and has no network host permissions.</p>
+    <p><b>Encrypted PDFs?</b> Not directly — print to PDF first.</p>
+    <p><b>Does compression work on text PDFs?</b> Only the embedded images are re-encoded; text-only files barely shrink.</p>
   </div>
 
-  <div class="card warn">
-    <p><b>Status (12 Nov 2026)</b>: the free version is live on Edge; the Pro payment channel is being set up, so Pro is not on sale yet. Existing installs are unaffected.</p>
+  <div class="warn" style="margin-top:20px">
+    <b>Status (2026-11-15)</b>: the free version is ready to use (<a href="../app/">web app</a> / <a href="../download/">extension</a>); Pro checkout is being connected.
+  </div>
   </div>
 
-  <footer><a href="../manual/en/" style="color:#93a1b3">User guide</a> · douduo (individual developer) · <a href="../privacy.html" style="color:#93a1b3">Privacy policy</a> · <a href="../terms.html" style="color:#93a1b3">Terms of Service</a></footer>
 </div>
-</body></html>
+<footer class="sitefoot">
+  <div class="frow">
+    <span>© 2026 DOUDUO</span>
+    <span><a href="mailto:zzhlmgj@163.com">zzhlmgj@163.com</a></span>
+  </div>
+  <div class="frow flinks"><a href="manual/">User guide</a><span class="sep">·</span><a href="privacy.html">Privacy</a><span class="sep">·</span><a href="terms.html">Terms</a><span class="sep">·</span><a href="mailto:zzhlmgj@163.com">Contact</a></div>
+</footer>
+<script>(function(){
+  var b=document.getElementById("themeBtn"); if(!b) return;
+  function paint(){var d=document.documentElement.dataset.theme==="light";b.textContent=d?"☀":"☾";b.title=d?"切换到深色":"切换到浅色";}
+  paint();
+  b.addEventListener("click",function(){
+    var next=document.documentElement.dataset.theme==="light"?"dark":"light";
+    document.documentElement.dataset.theme=next;
+    try{localStorage.setItem("theme",next);}catch(e){}
+    paint();
+  });
+  matchMedia("(prefers-color-scheme: light)").addEventListener("change",function(e){
+    if(localStorage.getItem("theme")) return;
+    document.documentElement.dataset.theme=e.matches?"light":"dark";paint();
+  });
+})();</script>
+</body>
+</html>
