@@ -1,54 +1,88 @@
 <!doctype html>
-<html lang="zh-CN"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>关于 · 豆多科技 DOUDUO</title>
-<meta name="description" content="豆多科技是个人开发者的作品集，做本地优先的小工具。">
+<meta name="description" content="豆多科技是一个人的软件工作室，做本地优先的小工具。">
+<link rel="icon" href="../pdfpocket/app/icon-192.png">
 <style>
-  :root{--bg:#0b0e13;--panel:#131922;--line:#243044;--tx:#eef2f7;--dim:#9aa7ba;--amber:#e8a33d}
+  :root{--bg:#0b0e13;--panel:#131922;--panel2:#0f141c;--line:#243044;--tx:#eef2f7;--dim:#9aa7ba;--amber:#e8a33d;--amber-ink:#f0b862}
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
-  .wrap{max-width:860px;margin:0 auto;padding:56px 24px 90px}
-  nav{display:flex;gap:18px;align-items:center;margin:0 0 38px;font-size:14px}
-  nav .brand{font-weight:700}
+  .wrap{max-width:880px;margin:0 auto;padding:48px 24px 90px}
+  nav{display:flex;gap:20px;align-items:center;margin:0 0 56px;font-size:14px}
+  nav .brand{font-weight:700;letter-spacing:.2px;display:flex;align-items:center;gap:9px}
+  nav .dot{width:26px;height:26px;border-radius:8px;background:var(--amber);color:#231703;font-weight:800;font-size:12px;display:grid;place-items:center}
   nav a{color:var(--dim);text-decoration:none}
-  nav a:hover{color:var(--amber)}
+  nav a:hover,nav a.on{color:var(--amber)}
   nav .sp{flex:1}
-  h1{font-size:25px;margin:0 0 8px}
-  .sub{color:var(--dim);margin:0 0 30px}
-  .card{display:block;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin:0 0 14px;text-decoration:none;color:inherit;transition:border-color .18s}
-  .card:hover{border-color:var(--amber)}
-  .card h2{margin:0 0 6px;font-size:17px;display:flex;gap:8px;align-items:center}
+  h1{font-size:32px;line-height:1.3;margin:0 0 14px;letter-spacing:-.4px}
+  .lede{color:var(--dim);font-size:16px;max-width:600px;margin:0 0 26px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 44px}
+  .chip{font-size:12.5px;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:5px 12px}
+  h2.sec{font-size:13px;color:var(--dim);font-weight:600;margin:46px 0 14px;letter-spacing:.6px;text-transform:uppercase}
+  .grid{display:grid;gap:14px}
+  .card{display:block;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 22px;text-decoration:none;color:inherit;transition:border-color .18s,transform .18s}
+  .card:hover{border-color:var(--amber);transform:translateY(-1px)}
+  .card h3{margin:0 0 6px;font-size:17px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
   .card p{margin:0;color:var(--dim);font-size:13.5px}
-  .tag{font-size:11px;color:#231703;background:var(--amber);border-radius:5px;padding:1px 6px;font-weight:600}
+  .tag{font-size:11px;color:#231703;background:var(--amber);border-radius:5px;padding:1px 7px;font-weight:600}
   .tag.ghost{background:#1d2635;color:#8fa0b8}
-  table{width:100%;border-collapse:collapse;font-size:13.5px;margin:10px 0 24px}
-  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
-  th{color:var(--dim);font-weight:600}
-  footer{margin-top:44px;color:#6b7789;font-size:13px;border-top:1px solid var(--line);padding-top:18px}
-  a{color:var(--amber)}
-</style></head><body><div class="wrap">
+  ul.plain{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+  ul.plain li{color:var(--dim);font-size:14px;display:flex;gap:10px}
+  ul.plain b{color:var(--tx);font-weight:600}
+  ul.plain .n{color:var(--amber);font-weight:700;min-width:18px}
+  ul.docs{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:18px;font-size:13.5px}
+  ul.docs a{color:var(--dim);text-decoration:none}
+  ul.docs a:hover{color:var(--amber)}
+  footer{margin-top:56px;color:#6b7789;font-size:13px;border-top:1px solid var(--line);padding-top:18px;display:flex;gap:14px;flex-wrap:wrap;justify-content:space-between}
+  footer a{color:var(--amber);text-decoration:none}
+  @media (max-width:560px){h1{font-size:25px}.wrap{padding:32px 18px 80px}nav{gap:14px;margin-bottom:40px}}
+</style>
+</head>
+<body>
+<div class="wrap">
   <nav>
-    <span class="brand">豆多科技</span>
+    <span class="brand"><span class="dot">豆</span>豆多科技</span>
+    <a href="../">首页</a>
     <a href="../products/">产品</a>
-    <a href="../about/">关于</a>
+    <a href="../about/" class="on">关于</a>
     <span class="sp"></span>
-    <a href="../pdfpocket/en/">PDF 口袋 · EN</a>
+    <a href="../pdfpocket/">PDF 口袋</a>
   </nav>
-  <h1>关于</h1>
-  <p class="sub">豆多科技（DOUDUO）不是公司，是一个人在做的小工具集合。</p>
 
-  <h2 style="font-size:16px;margin:26px 0 8px">为什么都是「本地优先」</h2>
-  <p style="color:var(--dim)">市面上的在线工具大多要把文件传到别人服务器。合同、发票、简历这些东西，传上去就多了一份风险。所以我做的每个工具都尽量在你自己的电脑上算完：断网打开照样能用，代码里也没有上传接口。</p>
+  <h1>一个人，一间软件铺子。</h1>
+  <p class="lede">豆多科技不是一个团队的名字，是一个人的工作室名。没有融资、没有增长团队，也不打算做平台——只把几个具体的小问题解决干净。</p>
 
-  <h2 style="font-size:16px;margin:26px 0 8px">怎么收费</h2>
-  <p style="color:var(--dim)">基础功能免费，够用就不必付钱。高级功能一次性买断（不做订阅），买了之后换电脑重新激活即可。</p>
+  <h2 class="sec">为什么做这些</h2>
+  <ul class="plain">
+    <li><span class="n">1</span><span><b>被在线工具恶心过。</b>合个 PDF 要上传合同、要注册、要看广告、转完还要等邮件。这些事在自己电脑上做，一秒钟的事。</span></li>
+    <li><span class="n">2</span><span><b>被订阅制劝退过。</b>一年用两次的功能，凭什么按月收钱。所以做买断。</span></li>
+    <li><span class="n">3</span><span><b>喜欢做得少的软件。</b>功能少、界面小、体积小，出问题时也容易说清楚。</span></li>
+  </ul>
 
-  <h2 style="font-size:16px;margin:26px 0 8px">联系</h2>
-  <table>
-    <tr><th>邮箱</th><td><a href="mailto:zzhlmgj@163.com">zzhlmgj@163.com</a></td></tr>
-    <tr><th>反馈</th><td>扩展里「报告问题」会带诊断信息，复制发邮件最快</td></tr>
-    <tr><th>合作</th><td>同上，标题写「合作」</td></tr>
-  </table>
+  <h2 class="sec">三条原则</h2>
+  <ul class="plain">
+    <li><span class="n">1</span><span><b>本地优先。</b>能不联网就不联网；必须联网的，先在界面上说清楚。</span></li>
+    <li><span class="n">2</span><span><b>不收集数据。</b>没有埋点、没有账号体系；你处理了什么文件，我不知道，也不想知道。</span></li>
+    <li><span class="n">3</span><span><b>说清楚边界。</b>不支持的格式、会失效的场景，写在手册里，而不是等你踩坑。</span></li>
+  </ul>
 
-  <footer>豆多科技 · <a href="../">回首页</a> · <a href="../products/">产品</a></footer>
-</div></body></html>
+  <h2 class="sec">时间线</h2>
+  <ul class="plain">
+    <li><span class="n">·</span><span><b>2026-10</b> 开始做浏览器里跑的小工具，第一个是职位页变更提醒。</span></li>
+    <li><span class="n">·</span><span><b>2026-11</b> DOUDUO PDF 口袋上线（网页版 + Edge 扩展）。</span></li>
+    <li><span class="n">·</span><span><b>2026-11</b> 听·剧（英语听力 App）进入内测。</span></li>
+  </ul>
+
+  <h2 class="sec">联系</h2>
+  <p class="lede">报 Bug、提需求、想试试内测版本，都可以直接发邮件：<a href="mailto:zzhlmgj@163.com" style="color:var(--amber)">zzhlmgj@163.com</a>。一个人做，回得慢，但都会看。</p>
+
+  <footer>
+    <span>© 2026 豆多科技 (DOUDUO) · 个人开发者</span>
+    <span><a href="../legal/privacy/">隐私说明</a></span>
+  </footer>
+</div>
+</body>
+</html>
