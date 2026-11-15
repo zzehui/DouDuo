@@ -77,7 +77,8 @@
   #progFill{height:100%;width:0;background:var(--amber);transition:width .18s}
   #progText{font-size:12.5px;color:var(--dim);display:flex;justify-content:space-between;gap:10px}
   .file .updown{display:flex;gap:4px}
-  .file .updown button{background:transparent;border:1px solid var(--line);color:var(--dim);border-radius:7px;
+  .file .updown button{min-width:44px;min-height:44px;
+background:transparent;border:1px solid var(--line);color:var(--dim);border-radius:7px;
         width:26px;height:26px;line-height:1;cursor:pointer;font-size:12px}
   @media (max-width:640px){
     header{padding:12px 14px;gap:8px;flex-wrap:wrap}
@@ -111,6 +112,8 @@
     *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;
       transition-duration:.001ms !important;scroll-behavior:auto !important}
   }
+  .file .updown button,.rowdel{min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+  .rowdel{padding:0}
 </style>
 </head>
 <body>
@@ -432,7 +435,7 @@ function paint() {
         <button data-up="${i}" title="${T("up")}" ${i === 0 ? "disabled" : ""}>↑</button>
         <button data-down="${i}" title="${T("down")}" ${i === state.files.length - 1 ? "disabled" : ""}>↓</button>
       </span>
-      <button class="btn ghost" data-x="${i}" style="padding:4px 9px">×</button>
+      <button class="btn ghost rowdel" data-x="${i}">×</button>
     </div>`).join("");
   $("#files").innerHTML = rows;
   document.querySelectorAll("[data-x]").forEach((b) => { b.onclick = () => {
