@@ -132,7 +132,7 @@
     <div class="row"><span class="hint" data-t="mergeHint">按列表顺序合并；拖拽排序请在扩展版里用 ↑↓</span></div>
     <div class="row" id="wmWrap">
       <label><input type="checkbox" id="wmOn"> <span data-t="wmLabel">加水印</span></label>
-      <input type="text" id="wmText" maxlength="40" placeholder="内部资料 / 样例">
+      <input type="text" id="wmText" maxlength="40" data-t-ph="wmPh" placeholder="内部资料">
     </div>
   </div>
   <div class="opt" id="opt-invoice">
@@ -215,7 +215,7 @@ const DICT = {
         mergeHint:"按列表顺序合并，用 ↑↓ 调顺序",
         pagesUnit:"页", unitFiles:"个文件", unitPages:"页", unitImages:"张图", unitParts:"份", up:"上移", down:"下移", invBtn:"拼版并下载", splitHint:"每 N 页切一份，或只取指定页（1-3,5）", imgHint:"每张图一页 A4，等比缩放居中，最多 5 张", compHint:"重压缩内嵌图片，文字与矢量保持清晰",
         pwaHint:"装到桌面，下次点图标直接打开", pwaInstall:"安装到桌面", pwaDone:"已安装，桌面见", folder:"合并整个文件夹…", folderPick:"选一个文件夹，把里面所有 PDF 按文件名顺序合成一个", folderNone:"这个文件夹里没有 PDF", demoName:"样例.pdf", folderDone:"已加入 {0} 个 PDF", folderNoSupport:"这个浏览器不支持选文件夹，请用「选择 PDF」多选", pwaManual:"没有安装入口？用地址栏右侧的安装图标",
-        invoiceTab:"发票拼版", invoiceHint:"把多份单页 PDF（发票、凭证）拼成 A4，每页 2 张，带裁切线和序号。", wmLabel:"加水印", wmPh:"内部资料 / 样例",
+        invoiceTab:"发票拼版", invoiceHint:"把多份单页 PDF（发票、凭证）拼成 A4，每页 2 张，带裁切线和序号。", wmLabel:"加水印", wmPh:"内部资料", wmDefault:"内部资料",
         proTitle:"激活 Pro", proBtnLabel:"激活 Pro", proBody:"粘贴购买后收到的授权码。离线校验，不联网。", activate:"激活", close:"关闭",
         proBuy:"查看购买方式", proBuyHint:"还没有授权码？ ", planFree:"免费版", planPro:"Pro",
         licOk:"Pro 已激活", licBad:"授权码无效", licFmt:"格式不对：应该是「一串字符.一串字符」", licExpired:"这个码已过期",
@@ -230,7 +230,7 @@ const DICT = {
         mergeHint:"Files merge in list order — use ↑↓ to reorder",
         pagesUnit:"pages", unitFiles:" files", unitPages:" pages", unitImages:" images", unitParts:" parts", up:"Move up", down:"Move down", invBtn:"Build sheet & download", splitHint:"Split every N pages, or take specific pages (1-3,5)", imgHint:"One A4 page per image, scaled to fit. Max 5 images.", compHint:"Re-compresses embedded images; text and vectors stay crisp.",
         pwaHint:"Install to desktop — open it next time without typing a URL", pwaInstall:"Install to desktop", pwaDone:"Installed — check your desktop", folder:"Merge a whole folder…", folderPick:"Pick a folder; every PDF in it is merged in name order", folderNone:"No PDFs in that folder", demoName:"sample.pdf", folderDone:"Added {0} PDFs", folderNoSupport:"This browser can't pick a folder — use Choose PDFs", pwaManual:"No install prompt — use the install icon in the address bar",
-        invoiceTab:"Invoice sheet", invoiceHint:"Lay single-page PDFs (invoices, receipts) onto A4, 2 per page, with cut lines and numbering.", wmLabel:"Add watermark", wmPh:"Internal / sample",
+        invoiceTab:"Invoice sheet", invoiceHint:"Lay single-page PDFs (invoices, receipts) onto A4, 2 per page, with cut lines and numbering.", wmLabel:"Add watermark", wmPh:"CONFIDENTIAL", wmDefault:"CONFIDENTIAL",
         proTitle:"Activate Pro", proBtnLabel:"Activate Pro", proBody:"Paste the licence key you received. Verified offline, no network.", activate:"Activate", close:"Close",
         proBuy:"See how to buy", proBuyHint:"No key yet? ", planFree:"Free", planPro:"Pro",
         licOk:"Pro activated", licBad:"Invalid licence key", licFmt:"Wrong format — it should look like “xxxxx.xxxxx”", licExpired:"That key has expired",
@@ -299,7 +299,7 @@ function applyPlan() {
   pill.textContent = pro ? T("planPro") : T("planFree");
   pill.classList.toggle("pro", pro);
   const tip = document.querySelector("footer.tip"); if (tip) tip.hidden = pro;
-  const wm = document.querySelector("#wmText"); if (wm) wm.placeholder = T("wmPh");
+  document.querySelectorAll("[data-t-ph]").forEach((el) => { el.placeholder = T(el.dataset.tPh); });
   $("#proBtn").hidden = pro;
   if (pro) {
     const who = $("#licWho");
@@ -456,7 +456,7 @@ $("#runBtn").addEventListener("click", async () => {
       let buffers = state.files.map((f) => f.buf);
       const wmOn = document.querySelector("#wmOn");
       if (wmOn && wmOn.checked && state.plan === "pro") {
-        const txt = (document.querySelector("#wmText").value || "内部资料").trim();
+        const txt = (document.querySelector("#wmText").value || "").trim() || T("wmDefault");
         buffers = await Promise.all(buffers.map((b) => watermark(b, txt)));
       }
       download(await merge(buffers, (d, t2) => progSet(d, t2, T("unitFiles"))), "merged.pdf");
