@@ -14,17 +14,21 @@ a{color:var(--amber)} .back{display:inline-block;margin-bottom:18px;color:var(--
 </style></head><body><div class="wrap">
 <a class="back" href="../">← 回到 PDF 口袋</a>
 <h1>DOUDUO PDF 口袋 · 功能点与使用手册</h1>
-<p>版本 1.2.1 ｜ 2026-11-14</p>
+<p>版本 1.3.0 ｜ 2026-11-14</p>
 <hr />
+<blockquote>
+<p><strong>当前版本：1.4.5</strong>——免费版 = <strong>合并 + 压缩</strong>（不限文件数、不限页数）。
+拆分、旋转、图片转 PDF、发票拼版、加水印是 <strong>Pro</strong>（39 元一次买断）：免费用户能看到这些标签并带 <code>Pro</code> 徽标，点一下会提示激活。</p>
+</blockquote>
 <h2>一句话</h2>
-<p><strong>在浏览器里把 PDF 合并、拆分、旋转、压缩——文件不上传，全部在你电脑上算完。</strong></p>
+<p><strong>在浏览器里把 PDF 合并、压缩——文件不上传，全部在你电脑上算完。</strong></p>
 <p>适合：经常要交材料、改简历、拼发票、发给别人又嫌太大的人。</p>
 <hr />
 <h2>30 秒上手</h2>
 <p><strong>安装（二选一）</strong></p>
 <ol>
 <li><strong>商店版</strong>：Edge 加载项商店搜「DOUDUO PDF 口袋」，点安装。</li>
-<li><strong>本地版</strong>：解压 <code>pdfpocket-1.2.0-local.zip</code> → 打开 <code>edge://extensions</code>（或 <code>chrome://extensions</code>）→ 打开右上角「开发人员模式」→「加载解压缩的扩展」→ 选解压出来的文件夹。</li>
+<li><strong>本地版</strong>：解压 <code>pdfpocket-1.3.0-local.zip</code> → 打开 <code>edge://extensions</code>（或 <code>chrome://extensions</code>）→ 打开右上角「开发人员模式」→「加载解压缩的扩展」→ 选解压出来的文件夹。</li>
 </ol>
 <p><strong>用法</strong></p>
 <p>点工具栏里的橙色图标 → 打开工作台 → 把 PDF 拖进灰色虚线框（或点「选择 PDF」）→ 选一个标签页 → 点右下角按钮 → 文件自动下载。</p>
@@ -83,7 +87,7 @@ a{color:var(--amber)} .back{display:inline-block;margin-bottom:18px;color:var(--
 </tr>
 </tbody>
 </table>
-<p><img loading="lazy" decoding="async" alt="工作台" src="screens/19-workbench-zh.webp" /></p>
+<p><img alt="工作台" src="screens/19-workbench-zh.png" /></p>
 <hr />
 <h2>处理时你会看到什么</h2>
 <p>拖进文件、点右下角按钮之后：</p>
@@ -132,13 +136,13 @@ a{color:var(--amber)} .back{display:inline-block;margin-bottom:18px;color:var(--
 <li>只拖一个文件也能点，结果就是它自己（方便你先转格式）。</li>
 </ul>
 <p><strong>真实效果</strong></p>
-<p><img loading="lazy" decoding="async" alt="功能一：合并" src="screens/real/merge.webp" /></p>
+<p><img alt="功能一：合并" src="screens/real/merge.png" /></p>
 <blockquote>
 <p>处理前 → 处理后：左边是 2 页中文论文，右边是 21 页幻灯片（720×405）。合并后 23 页，页面尺寸与字体各自保留。</p>
 </blockquote>
 <hr />
 <h2>功能二：拆分</h2>
-<p><img loading="lazy" decoding="async" alt="拆分标签页" src="screens/24-split-zh.webp" /></p>
+<p><img alt="拆分标签页" src="screens/24-split-zh.png" /></p>
 <p><strong>用途</strong>：把一份大 PDF 拆成若干份（按章节、按页数、把某几页单独拿出来）。</p>
 <p><strong>两种模式（单选）</strong></p>
 <table>
@@ -171,10 +175,10 @@ a{color:var(--amber)} .back{display:inline-block;margin-bottom:18px;color:var(--
 <p><strong>细节</strong></p>
 <ul>
 <li>拆分出来的文件<strong>顺序与页码升序一致</strong>，不受输入顺序影响。</li>
-<li>免费版只导出第一份，其余需要 Pro（见下）。</li>
+<li>批量导出多份是 Pro 功能；免费用户可以拆分，但只出第一份（会提示）。</li>
 </ul>
 <p><strong>真实效果</strong></p>
-<p><img loading="lazy" decoding="async" alt="功能二：拆分" src="screens/real/split.webp" /></p>
+<p><img alt="功能二：拆分" src="screens/real/split.png" /></p>
 <blockquote>
 <p>处理前 → 处理后：21 页幻灯片按「每 7 页一份」切成 3 个文件，第 1 份的第 1 页就是原第 1 页。</p>
 </blockquote>
@@ -205,7 +209,7 @@ a{color:var(--amber)} .back{display:inline-block;margin-bottom:18px;color:var(--
 <p>文字版的原因：字体是<strong>全文档共用</strong>的一份资源，每一份拆分文件都得带上它用到的整套字体，否则打开就是乱码。这不是重复打包。</p>
 <p>如果拆出来的每份都很大，工具会在完成提示里直接说明，不用自己猜。</p>
 <h2>功能三：旋转</h2>
-<p><img loading="lazy" decoding="async" alt="旋转标签页" src="screens/25-rotate-zh.webp" /></p>
+<p><img alt="旋转标签页" src="screens/25-rotate-zh.png" /></p>
 <p><strong>用途</strong>：扫描件方向歪了、手机拍的横过来了。</p>
 <p><strong>步骤</strong></p>
 <ol>
@@ -221,13 +225,13 @@ a{color:var(--amber)} .back{display:inline-block;margin-bottom:18px;color:var(--
 <li>反复转同一页会累加（转两次 90° = 180°）。</li>
 </ul>
 <p><strong>真实效果</strong></p>
-<p><img loading="lazy" decoding="async" alt="功能三：旋转" src="screens/real/rotate.webp" /></p>
+<p><img alt="功能三：旋转" src="screens/real/rotate.png" /></p>
 <blockquote>
 <p>处理前 → 处理后：整份 2 页顺时针转 90°。页面转了，文字也跟着转，但仍然可以选择、可以搜索。</p>
 </blockquote>
 <hr />
 <h2>功能四：压缩</h2>
-<p><img loading="lazy" decoding="async" alt="压缩标签页" src="screens/26-compress-zh.webp" /></p>
+<p><img alt="压缩标签页" src="screens/26-compress-zh.png" /></p>
 <p><strong>用途</strong>：材料超过上传限制（常见 10MB / 20MB）、邮件发不出去。</p>
 <p><strong>步骤</strong></p>
 <ol>
@@ -274,13 +278,13 @@ a{color:var(--amber)} .back{display:inline-block;margin-bottom:18px;color:var(--
 <li>压缩是<strong>有损</strong>的，压完不可逆；建议保留原文件。</li>
 </ul>
 <p><strong>真实效果</strong></p>
-<p><img loading="lazy" decoding="async" alt="功能四：压缩" src="screens/real/compress.webp" /></p>
+<p><img alt="功能四：压缩" src="screens/real/compress.png" /></p>
 <blockquote>
 <p>处理前 → 处理后：4 页 300dpi 扫描件 1824 KB → 1308 KB（省 30%）。小字仍清晰，没有花屏。</p>
 </blockquote>
 <hr />
 <h2>功能五：图片转 PDF</h2>
-<p><img loading="lazy" decoding="async" alt="图片转 PDF" src="screens/27-img-zh.webp" /></p>
+<p><img alt="图片转 PDF" src="screens/27-img-zh.png" /></p>
 <p><strong>用途</strong>：手机拍的文件、扫描件截图、身份证照片，要交一份 PDF。</p>
 <p><strong>步骤</strong>
 1. 拖入图片（JPG / PNG，可多选）
@@ -288,11 +292,11 @@ a{color:var(--amber)} .back{display:inline-block;margin-bottom:18px;color:var(--
 <p><strong>细节</strong></p>
 <ul>
 <li>每张图一页 A4，等比缩放居中，留 24pt 边距，不裁切</li>
-<li>免费版最多 5 张，Pro 不限</li>
+<li>免费版是 Pro 功能，激活后才能用</li>
 <li>不做 OCR：图片里的字仍是图片，不能搜索</li>
 </ul>
 <h2>功能六：发票拼版（Pro）</h2>
-<p><img loading="lazy" decoding="async" alt="发票拼版" src="screens/20-invoice-zh.webp" /></p>
+<p><img alt="发票拼版" src="screens/20-invoice-zh.png" /></p>
 <p><strong>解决什么</strong>：报销时一堆单页发票、回单，一张 A4 只放一张太浪费，打印出来还要自己剪。</p>
 <p><strong>怎么做</strong>：</p>
 <ol>
@@ -315,12 +319,12 @@ a{color:var(--amber)} .back{display:inline-block;margin-bottom:18px;color:var(--
 <li>每页 2 张是当前唯一版式（4 张版要改代码，还没做）</li>
 </ul>
 <blockquote>
-<p>这是 Pro 功能，免费版看不到这个标签。Pro 39 元一次买断。</p>
+<p>这是 Pro 功能：免费用户能看到标签，但带 <code>Pro</code> 徽标、点开会提示激活。Pro 39 元一次买断。</p>
 </blockquote>
 <h2>功能七：加文字水印（Pro）</h2>
-<p><img loading="lazy" decoding="async" alt="加水印" src="screens/21-watermark-zh.webp" /></p>
+<p><img alt="加水印" src="screens/21-watermark-zh.png" /></p>
 <p><strong>解决什么</strong>：发给外部前打个「内部资料」「禁止外传」「机密」的标，或者给自己文件做版本标记。</p>
-<p><strong>怎么做</strong>：合并标签页 → 勾「加水印」→ 输入文字（中文可以）→ 点「合并并下载」。</p>
+<p><strong>怎么做</strong>：合并标签页 → 勾「加水印」→ 输入文字（不填就用默认：中文界面「内部资料」、英文界面 <code>CONFIDENTIAL</code>）→ 点「合并并下载」。</p>
 <p><strong>效果</strong>：</p>
 <ul>
 <li>文字斜 30°、半透明平铺整页，<strong>不挡正文</strong></li>
@@ -344,52 +348,72 @@ a{color:var(--amber)} .back{display:inline-block;margin-bottom:18px;color:var(--
 <tr>
 <th></th>
 <th>免费版</th>
-<th>Pro</th>
+<th>Pro（39 元，一次买断）</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>单次文件数</td>
-<td>3</td>
-<td>不限</td>
-</tr>
-<tr>
-<td>单次总页数</td>
-<td>50</td>
-<td>不限</td>
-</tr>
-<tr>
-<td>批量拆分（一次导出多份）</td>
-<td>✗（只出第一份）</td>
+<td>合并</td>
+<td>✓ 不限文件数 / 页数</td>
 <td>✓</td>
 </tr>
 <tr>
-<td>合并 / 拆分 / 旋转 / 压缩</td>
-<td>✓ 全部可用</td>
+<td>压缩</td>
+<td>✓ 三档</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>自定义输出文件名</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>拆分 / 抽取（含批量导出）</td>
+<td>—</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>旋转</td>
+<td>—</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>图片转 PDF</td>
+<td>—</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>发票拼版</td>
+<td>—</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>加水印</td>
+<td>—</td>
 <td>✓</td>
 </tr>
 <tr>
 <td>价格</td>
 <td>免费</td>
-<td>一次买断</td>
+<td>一次买断，后续新功能不再收费</td>
 </tr>
 </tbody>
 </table>
 <blockquote>
-<p>当前版本（1.2.0）<strong>先只上免费版</strong>，界面里没有购买入口——不会出现「点了没反应」的按钮。Pro 将在接上支付后开启。</p>
+<p>为什么这么分：文件数和页数是可以绕过的（分两批合并即可），所以免费版在「数量」上完全不限，Pro 卖的是<strong>进阶功能</strong>。</p>
 </blockquote>
 <p><strong>真实效果</strong></p>
-<p><img loading="lazy" decoding="async" alt="功能五：图片转 PDF" src="screens/real/img2pdf.webp" /></p>
+<p><img alt="功能五：图片转 PDF" src="screens/real/img2pdf.png" /></p>
 <blockquote>
 <p>处理前 → 处理后：手机截图（1200×754）变成一页 A4，等比缩放、居中，四边留 24pt。</p>
 </blockquote>
 <p><strong>真实效果</strong></p>
-<p><img loading="lazy" decoding="async" alt="功能六：发票拼版（Pro）" src="screens/real/invoice.webp" /></p>
+<p><img alt="功能六：发票拼版（Pro）" src="screens/real/invoice.png" /></p>
 <blockquote>
 <p>处理前 → 处理后：3 份 2 页的单据（共 6 页）拼成 3 页 A4，每页 2 张，中间有裁切线、左上角有顺序号。</p>
 </blockquote>
 <p><strong>真实效果</strong></p>
-<p><img loading="lazy" decoding="async" alt="功能七：加文字水印（Pro）" src="screens/real/watermark.webp" /></p>
+<p><img alt="功能七：加文字水印（Pro）" src="screens/real/watermark.png" /></p>
 <blockquote>
 <p>处理前 → 处理后：2 页论文叠上「内部资料」，斜 30° 平铺，浅灰不挡字，正文仍可选中。</p>
 </blockquote>
