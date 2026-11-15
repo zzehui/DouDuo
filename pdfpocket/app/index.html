@@ -291,7 +291,7 @@ const DICT = {
         proTitle:"激活 Pro", proBtnLabel:"激活 Pro", proBody:"粘贴购买后收到的授权码。离线校验，不联网。", activate:"激活", close:"关闭",
         proBuy:"查看购买方式", proBuyHint:"还没有授权码？ ", planFree:"免费版", planPro:"Pro",
         proFeat1:"解锁拆分、旋转、图片转 PDF", proFeat2:"发票拼版、加文字水印", proFeat3:"一次买断，后续新功能全包",
-        licOk:"Pro 已激活", licBad:"授权码无效", licFmt:"格式不对：应该是「一串字符.一串字符」", licExpired:"这个码已过期",
+        licOk:"Pro 已激活", licOn:"已激活：{0}（第 {1} 代授权）", licOnNoMail:"已激活（第 {0} 代授权）", licBad:"授权码无效", licFmt:"格式不对：应该是「一串字符.一串字符」", licExpired:"这个码已过期",
         needPro:"这是 Pro 功能：先激活授权码", invoicePro:"发票拼版是 Pro 功能"},
   en: {title:"DOUDUO PDF Pocket · Web", sub:"Everything runs on your machine. Your files never leave your computer.", merge:"Merge",
         split:"Split", rotate:"Rotate", compress:"Compress", img:"Images to PDF", drop:"Drop PDFs or images here, or click to choose",
@@ -309,7 +309,7 @@ const DICT = {
         proTitle:"Activate Pro", proBtnLabel:"Activate Pro", proBody:"Paste the licence key you received. Verified offline, no network.", activate:"Activate", close:"Close",
         proBuy:"See how to buy", proBuyHint:"No key yet? ", planFree:"Free", planPro:"Pro",
         proFeat1:"Unlock Split, Rotate, Images to PDF", proFeat2:"Invoice sheets and text watermarks", proFeat3:"One payment, all future features included",
-        licOk:"Pro activated", licBad:"Invalid licence key", licFmt:"Wrong format — it should look like “xxxxx.xxxxx”", licExpired:"That key has expired",
+        licOk:"Pro activated", licOn:"Activated for {0} (gen {1})", licOnNoMail:"Activated (gen {0})", licBad:"Invalid licence key", licFmt:"Wrong format — it should look like “xxxxx.xxxxx”", licExpired:"That key has expired",
         needPro:"Pro feature — activate a licence first", invoicePro:"Invoice sheet is a Pro feature"}
 };
 let LANG = (() => {
@@ -453,7 +453,9 @@ function applyPlan() {
   if (pro) {
     const who = $("#licWho");
     who.hidden = false;
-    who.textContent = `已激活：${state.email}（第 ${state.major} 代授权）`;
+    who.textContent = state.email
+      ? T("licOn").replace("{0}", state.email).replace("{1}", state.major)
+      : T("licOnNoMail").replace("{0}", state.major);
   }
 }
 
