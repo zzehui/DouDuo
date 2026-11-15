@@ -31,7 +31,7 @@
 ./tools/set-domain.sh douduotech.com
 ```
 
-脚本会：校验 DNS 是否指向 GitHub → 写 `CNAME` → 把站内 `https://zzehui.github.io/DouDuo` 全部替换成 `https://douduotech.com` → 提交推送。
+脚本会：校验 DNS 是否指向 GitHub → 写 `CNAME` → 把站内 `https://douduotech.com` 全部替换成 `https://douduotech.com` → 提交推送。
 **DNS 没生效时脚本会拒绝执行**，避免站点打不开。
 
 最后在 GitHub `Settings → Pages` 勾 **Enforce HTTPS**（证书 1–10 分钟签发）。
