@@ -581,16 +581,6 @@ $("#runBtn").addEventListener("click", async () => {
   } finally { progEnd(); btn.disabled = !state.files.length; btn.textContent = old; paint(); }
 });
 
-$("#demoLink").addEventListener("click", async (e) => {
-  e.preventDefault(); e.stopPropagation();
-  try {
-    const r = await fetch("./demo.pdf");
-    const buf = new Uint8Array(await r.arrayBuffer());
-    const meta = await info(buf);
-    state.files.push({ name: "样例.pdf", size: buf.length, pages: meta.pages, buf });
-    paint(); toast(T("added"));
-  } catch (err) { toast(T("demoFail") + (err.message || err)); }
-});
 
 applyLang();
 bootLicense();
