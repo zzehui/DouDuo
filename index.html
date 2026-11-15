@@ -6,6 +6,7 @@
 <title>豆多科技 DOUDUO</title>
 <meta name="description" content="豆多科技（DOUDUO）是一个人的软件工作室：把复杂的事，做成简单好用的工具。">
 <link rel="icon" href="pdfpocket/app/icon-192.png">
+<script>(function(){try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";}document.documentElement.dataset.theme=t;}catch(e){}})();</script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -17,6 +18,7 @@
     <a href="about/">关于</a>
     <span class="sp"></span>
     <a href="en/">EN</a>
+    <button class="themebtn" id="themeBtn" type="button" aria-label="切换深浅主题" title="切换深浅主题">☾</button>
   </nav>
 
   <p class="vision">把复杂的事，<br>做成<b>简单好用</b>的工具。</p>
@@ -35,6 +37,21 @@
     <span><a href="mailto:zzhlmgj@163.com">zzhlmgj@163.com</a></span>
   </footer>
 </div>
-<p style="max-width:760px;margin:0 auto;padding:0 24px 40px;color:#7c8798;font-size:13px">豆多科技（DOUDUO）· <a href="pdfpocket/terms.html" style="color:#93a1b3">服务条款</a> · <a href="legal/privacy/" style="color:#93a1b3">隐私</a> · <a href="mailto:zzhlmgj@163.com" style="color:#93a1b3">联系</a></p>
+<p class="subfoot">豆多科技（DOUDUO）· <a href="pdfpocket/terms.html">服务条款</a> · <a href="legal/privacy/">隐私</a> · <a href="mailto:zzhlmgj@163.com">联系</a></p>
+<script>(function(){
+  var b=document.getElementById("themeBtn"); if(!b) return;
+  function paint(){var d=document.documentElement.dataset.theme==="light";b.textContent=d?"☀":"☾";b.title=d?"切换到深色":"切换到浅色";}
+  paint();
+  b.addEventListener("click",function(){
+    var next=document.documentElement.dataset.theme==="light"?"dark":"light";
+    document.documentElement.dataset.theme=next;
+    try{localStorage.setItem("theme",next);}catch(e){}
+    paint();
+  });
+  matchMedia("(prefers-color-scheme: light)").addEventListener("change",function(e){
+    if(localStorage.getItem("theme")) return;
+    document.documentElement.dataset.theme=e.matches?"light":"dark";paint();
+  });
+})();</script>
 </body>
 </html>
