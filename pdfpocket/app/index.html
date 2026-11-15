@@ -149,9 +149,10 @@ background:transparent;border:1px solid var(--line);color:var(--dim);border-radi
 <main>
   <div class="tabs" id="tabs">
     <button class="tab on" data-mode="merge" data-t="merge">合并</button>
+    <button class="tab" data-mode="compress" data-t="compress">压缩</button>
     <button class="tab" data-mode="split" data-t="split">拆分<b class="prodot" hidden>Pro</b></button>
     <button class="tab" data-mode="rotate" data-t="rotate">旋转<b class="prodot" hidden>Pro</b></button>
-    <button class="tab" data-mode="compress" data-t="compress">压缩</button>
+    <button class="tab" data-mode="wm" data-t="tabWm">水印<b class="prodot" hidden>Pro</b></button>
     <button class="tab" data-mode="img" data-t="img">图片转 PDF<b class="prodot" hidden>Pro</b></button>
     <button class="tab" data-mode="invoice" data-t="invoiceTab">发票拼版<b class="prodot" hidden>Pro</b></button>
   </div>
@@ -162,6 +163,14 @@ background:transparent;border:1px solid var(--line);color:var(--dim);border-radi
     <input id="fileInput" type="file" accept="application/pdf,.pdf,image/jpeg,image/png,.jpg,.jpeg,.png" multiple hidden>
   </div>
 
+  <section class="result" id="result" hidden aria-live="polite">
+    <div class="rtext"><b id="rName"></b><span id="rMeta"></span></div>
+    <div class="ractions">
+      <button class="btn ghost" id="rAgain" data-t="again">继续处理</button>
+      <button class="btn" id="rDl" data-t="dlAgain">再下载一次</button>
+    </div>
+  </section>
+
   <section class="recent" id="recent" hidden>
     <div class="rhead"><span data-t="recentTitle">最近处理</span><button class="linkbtn" id="recentClear" data-t="recentClear">清空</button></div>
     <div class="rlist" id="recentList"></div>
@@ -171,15 +180,7 @@ background:transparent;border:1px solid var(--line);color:var(--dim);border-radi
 
   <div class="opt on" id="opt-merge">
     <div class="row"><span class="hint" data-t="mergeHint">按列表顺序合并；拖拽排序请在扩展版里用 ↑↓</span></div>
-    <section class="result" id="result" hidden aria-live="polite">
-  <div class="rtext"><b id="rName"></b><span id="rMeta"></span></div>
-  <div class="ractions">
-    <button class="btn ghost" id="rAgain" data-t="again">继续处理</button>
-    <button class="btn" id="rDl" data-t="dlAgain">再下载一次</button>
-  </div>
-</section>
-
-<div class="row" id="wmWrap">
+    <div class="row" id="wmWrap">
       <label><input type="checkbox" id="wmOn"> <span data-t="wmLabel">加水印</span></label>
       <input type="text" id="wmText" maxlength="40" data-t-ph="wmPh" placeholder="内部资料">
     </div>
@@ -201,6 +202,13 @@ background:transparent;border:1px solid var(--line);color:var(--dim);border-radi
       <input type="number" id="splitN" value="1" min="1" style="width:80px">
       <label><input type="radio" name="sm" value="range"> <span data-t="splitRange">只取这些页</span></label>
       <input type="text" id="splitRange" placeholder="1-3,5" style="width:140px">
+    </div>
+  </div>
+  <div class="opt" id="opt-wm">
+    <div class="row"><span class="hint" data-t="wmHint">给 PDF 叠一层斜向文字水印，可当草稿/内部资料标记。</span></div>
+    <div class="row">
+      <label for="wmOnlyText" data-t="wmLabel">水印文字</label>
+      <input type="text" id="wmOnlyText" class="txt grow" maxlength="40" data-t-ph="wmPh" placeholder="内部资料">
     </div>
   </div>
   <div class="opt" id="opt-rotate">
@@ -277,8 +285,8 @@ const $ = (s) => document.querySelector(s);
 const DICT = {
   zh: {title:"DOUDUO PDF 口袋 · 在线版", sub:"所有处理在本机完成，文件不会离开你的电脑。", merge:"合并", split:"拆分",
         rotate:"旋转", compress:"压缩", img:"图片转 PDF", drop:"把 PDF 或图片拖进来，或点这里选择",
-        dropSub:"支持多选 · 不上传 · 断网也能用 · ", demo:"用样例文件试试", noFiles:"还没有文件 · 拖进来或点「选择 PDF」", again:"继续处理", dlAgain:"再下载一次", outLabel:"输出文件名", outPh:"合并.pdf", tagMerge:"合并", tagCompress:"压缩", tagExtract:"抽取", tagRotate:"旋转", tagInvoice:"发票拼版", tagImg:"图片转PDF", outMore:"等{0}个", recentTitle:"最近处理", recentClear:"清空", recentEmpty:"", keysTitle:"快捷键", close:"关闭", k1:"打开文件", k2:"撤销删除/继续处理", k3:"关闭弹窗", k4:"开始处理", k5:"查看快捷键", newVersion:"有新版本，点这里刷新", again:"继续处理", dlAgain:"再下载一次", outLabel:"输出文件名", outPh:"合并.pdf", tagMerge:"合并", tagCompress:"压缩", tagExtract:"抽取", tagRotate:"旋转", tagInvoice:"发票拼版", tagImg:"图片转PDF", outMore:"等{0}个", recentTitle:"最近处理", recentClear:"清空", recentEmpty:"", keysTitle:"快捷键", close:"关闭", k1:"打开文件", k2:"撤销删除/继续处理", k3:"关闭弹窗", k4:"开始处理", k5:"查看快捷键", meta:"{0} · {1}", newVersion:"有新版本，点这里刷新", run:"开始处理",
-        tipA:"拆分、旋转、水印、发票拼版属于 Pro · ", tipB:"点右上角「激活 Pro」", langLabel:"界面语言", working:"处理中…", splitEvery:"每 N 页切一份", splitRange:"只取这些页", rotAll:"整份", rotRange:"只转这几页", deg90:"顺时针 90°", deg270:"顺时针 270°", lvLight:"轻（2200px）", lvNormal:"标准（1600px）", lvStrong:"强（1100px）", themeToDark:"切到深色", themeToLight:"切到浅色",
+        dropSub:"支持多选 · 不上传 · 断网也能用 · ", demo:"用样例文件试试", noFiles:"还没有文件 · 拖进来或点「选择 PDF」", again:"继续处理", dlAgain:"再下载一次", outLabel:"输出文件名", outPh:"合并.pdf", tagMerge:"合并", tagCompress:"压缩", tagExtract:"抽取", tagRotate:"旋转", tagWm:"水印", tagInvoice:"发票拼版", tagImg:"图片转PDF", outMore:"等{0}个", recentTitle:"最近处理", recentClear:"清空", recentEmpty:"", keysTitle:"快捷键", close:"关闭", k1:"打开文件", k2:"撤销删除/继续处理", k3:"关闭弹窗", k4:"开始处理", k5:"查看快捷键", newVersion:"有新版本，点这里刷新", again:"继续处理", dlAgain:"再下载一次", outLabel:"输出文件名", outPh:"合并.pdf", tagMerge:"合并", tagCompress:"压缩", tagExtract:"抽取", tagRotate:"旋转", tagWm:"水印", tagInvoice:"发票拼版", tagImg:"图片转PDF", outMore:"等{0}个", recentTitle:"最近处理", recentClear:"清空", recentEmpty:"", keysTitle:"快捷键", close:"关闭", k1:"打开文件", k2:"撤销删除/继续处理", k3:"关闭弹窗", k4:"开始处理", k5:"查看快捷键", meta:"{0} · {1}", newVersion:"有新版本，点这里刷新", run:"开始处理",
+        tipA:"拆分、旋转、水印、发票拼版属于 Pro · ", tipB:"点右上角「激活 Pro」", langLabel:"界面语言", working:"处理中…", tabWm:"水印", wmHint:"给 PDF 叠一层斜向文字水印，可当草稿/内部资料标记。文字可选中、可搜索。", splitEvery:"每 N 页切一份", splitRange:"只取这些页", rotAll:"整份", rotRange:"只转这几页", deg90:"顺时针 90°", deg270:"顺时针 270°", lvLight:"轻（2200px）", lvNormal:"标准（1600px）", lvStrong:"强（1100px）", themeToDark:"切到深色", themeToLight:"切到浅色",
         merged:"合并并下载", splitBtn:"拆分并下载", rotBtn:"旋转并下载", compBtn:"压缩并下载", imgBtn:"转成 PDF",
         added:"已加入样例.pdf（3 页）", fail:"处理失败：", noImg:"先加几张图片", demoFail:"样例加载失败：",
         splitOne:"份，在线版只下载第一份；批量导出请用扩展版", badRange:"页码写错了", unit:" 个文件 · ",
@@ -295,7 +303,7 @@ const DICT = {
         needPro:"这是 Pro 功能：先激活授权码", invoicePro:"发票拼版是 Pro 功能"},
   en: {title:"DOUDUO PDF Pocket · Web", sub:"Everything runs on your machine. Your files never leave your computer.", merge:"Merge",
         split:"Split", rotate:"Rotate", compress:"Compress", img:"Images to PDF", drop:"Drop PDFs or images here, or click to choose",
-        dropSub:"Multiple files · no upload · works offline · ", demo:"try a sample file", noFiles:"No files yet — drop files or click Choose PDFs", again:"Process more", dlAgain:"Download again", outLabel:"Output file name", outPh:"merged.pdf", tagMerge:"merged", tagCompress:"compressed", tagExtract:"extracted", tagRotate:"rotated", tagInvoice:"invoices", tagImg:"images", outMore:"+{0}", recentTitle:"Recent", recentClear:"Clear", keysTitle:"Keyboard shortcuts", close:"Close", k1:"Open files", k2:"Undo delete / keep processing", k3:"Close dialog", k4:"Run", k5:"Show shortcuts", newVersion:"Update ready — refresh", again:"Process more", dlAgain:"Download again", outLabel:"Output file name", outPh:"merged.pdf", tagMerge:"merged", tagCompress:"compressed", tagExtract:"extracted", tagRotate:"rotated", tagInvoice:"invoices", tagImg:"images", outMore:"+{0}", recentTitle:"Recent", recentClear:"Clear", keysTitle:"Keyboard shortcuts", close:"Close", k1:"Open files", k2:"Undo delete / keep processing", k3:"Close dialog", k4:"Run", k5:"Show shortcuts", meta:"{0} · {1}", newVersion:"Update ready — refresh", run:"Run",
+        dropSub:"Multiple files · no upload · works offline · ", demo:"try a sample file", noFiles:"No files yet — drop files or click Choose PDFs", again:"Process more", dlAgain:"Download again", outLabel:"Output file name", outPh:"merged.pdf", tagMerge:"merged", tagCompress:"compressed", tagExtract:"extracted", tagRotate:"rotated", tagWm:"watermarked", tagInvoice:"invoices", tagImg:"images", outMore:"+{0}", recentTitle:"Recent", recentClear:"Clear", keysTitle:"Keyboard shortcuts", close:"Close", k1:"Open files", k2:"Undo delete / keep processing", k3:"Close dialog", k4:"Run", k5:"Show shortcuts", newVersion:"Update ready — refresh", again:"Process more", dlAgain:"Download again", outLabel:"Output file name", outPh:"merged.pdf", tagMerge:"merged", tagCompress:"compressed", tagExtract:"extracted", tagRotate:"rotated", tagWm:"watermarked", tagInvoice:"invoices", tagImg:"images", outMore:"+{0}", recentTitle:"Recent", recentClear:"Clear", keysTitle:"Keyboard shortcuts", close:"Close", k1:"Open files", k2:"Undo delete / keep processing", k3:"Close dialog", k4:"Run", k5:"Show shortcuts", meta:"{0} · {1}", newVersion:"Update ready — refresh", run:"Run",
         tipA:"Split, rotate, watermark and invoice sheets are Pro · ", tipB:"activate from the button above", langLabel:"Interface language", working:"Working…", splitEvery:"Every N pages", splitRange:"Only these pages", rotAll:"All pages", rotRange:"Only these pages", deg90:"90° clockwise", deg270:"270° clockwise", lvLight:"Light (2200px)", lvNormal:"Standard (1600px)", lvStrong:"Strong (1100px)", themeToDark:"Switch to dark", themeToLight:"Switch to light",
         merged:"Merge & download", splitBtn:"Split & download", rotBtn:"Rotate & download", compBtn:"Compress & download", imgBtn:"Convert to PDF",
         added:"sample.pdf added (3 pages)", fail:"Failed: ", noImg:"add some images first", demoFail:"Sample failed: ",
@@ -432,6 +440,7 @@ document.querySelector("#themeBtn").addEventListener("click", () => {
 document.addEventListener("themechange", paintThemeBtn);
 paintThemeBtn();
 
+const GATED = ["split","rotate","wm","img","invoice"];
 function applyPlan() {
   document.querySelectorAll(".tab .prodot").forEach((b) => { b.hidden = state.plan === "pro"; });
   const pro = state.plan === "pro";
@@ -494,7 +503,7 @@ input.addEventListener("change", (e) => { add([...e.target.files]); input.value 
 ["dragleave","drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
 drop.addEventListener("drop", (e) => add([...e.dataTransfer.files]));
 
-const GATED = ["split","rotate","img","invoice"];
+
 $("#tabs").addEventListener("click", (e) => {
   const b = e.target.closest(".tab"); if (!b) return;
   if (state.plan !== "pro" && GATED.includes(b.dataset.mode)) {
@@ -725,6 +734,12 @@ $("#runBtn").addEventListener("click", async () => {
         }
         if (parts.length > 1 && state.plan !== "pro") toast(`${parts.length}${T("splitOne")}`);
       }
+    } else if (state.mode === "wm") {
+      const txt = (($("#wmOnlyText").value || "").trim()) || T("wmDefault");
+      const bytes = await watermark(state.files[0].buf, txt);
+      const nm = autoOutName(T("tagWm"));
+      download(bytes, nm); DL = { bytes, name: nm };
+      showResult(bytes, nm); doneToast(nm, bytes.byteLength, t0);
     } else if (state.mode === "rotate") {
       const scope = document.querySelector('input[name="rm"]:checked').value;
       download(await rotate(state.files[0].buf, scope === "range" ? $("#rotateRange").value.trim() : "", +$("#rotateDeg").value), autoOutName(T("tagRotate")));
