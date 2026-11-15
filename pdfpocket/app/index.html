@@ -535,10 +535,10 @@ async function add(list) {
   }
   for (const f of state.files.slice(-list.length)) {
     if (f.buf && f.buf.byteLength <= RECENT_BYTES) {
-      recentPut({ id: `${f.name}-${f.size}`, name: f.name, size: f.size, pages: f.pages, type: f.type || "application/pdf", ts: Date.now(), bytes: f.buf });
+      await recentPut({ id: `${f.name}-${f.size}`, name: f.name, size: f.size, pages: f.pages, type: f.type || "application/pdf", ts: Date.now(), bytes: f.buf });
     }
   }
-  renderRecent();
+  await renderRecent();
 paint();
 }
 
