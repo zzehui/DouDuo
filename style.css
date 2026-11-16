@@ -65,3 +65,6 @@ ul.plain b{color:var(--tx)}
 .prose code{background:var(--ghost);border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:12.5px}
 .warn{background:var(--panel);border:1px solid var(--amber);border-radius:14px;padding:16px 18px;color:var(--tx);font-size:13.5px}
 .warn a{color:var(--amber-ink)}
+
+.visionline{font-size:14px;color:var(--dim);margin:26px 0 0}
+.visionline b{color:var(--tx);font-weight:600}
