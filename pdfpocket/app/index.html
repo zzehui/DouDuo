@@ -237,7 +237,7 @@ background:transparent;border:1px solid var(--line);color:var(--dim);border-radi
     <span data-t="pwaHint">装到桌面，下次点图标直接打开，不用再输网址</span>
     <button class="btn ghost" id="installBtn" data-t="pwaInstall">安装到桌面</button>
   </div>
-  <footer class="tip"><span data-t="tipA">想要批量拆分、加水印、发票拼版？</span><a href="../" data-t="tipB">装浏览器扩展版（Pro）</a></footer>
+  <footer class="tip"><span id="statToggle" style="cursor:pointer;text-decoration:underline">统计：开</span> · <span data-t="tipA">想要批量拆分、加水印、发票拼版？</span><a href="../" data-t="tipB">装浏览器扩展版（Pro）</a></footer><span data-t="tipA">想要批量拆分、加水印、发票拼版？</span><a href="../" data-t="tipB">装浏览器扩展版（Pro）</a></footer>
 </main>
 
 <div class="modal" id="keys" hidden>
@@ -276,6 +276,25 @@ background:transparent;border:1px solid var(--line);color:var(--dim);border-radi
 </div>
 <div id="toast" hidden></div>
 
+<script>
+(function () {
+  var API = "https://douduo-stats.douduotech.workers.dev";
+  var off = false; try { off = localStorage.getItem("dd_notrack") === "1"; } catch (e) {}
+  function send(payload) {
+    if (off) return;
+    try {
+      fetch(API + "/hit", { method: "POST", mode: "cors", keepalive: true,
+        headers: { "content-type": "application/json" }, body: JSON.stringify(payload) }).catch(function () {});
+    } catch (e) {}
+  }
+  window.ddTrack = function (event, ok, extra) {
+    var p = { surface: "web", event: event, ok: !!ok };
+    if (extra) for (var k in extra) p[k] = extra[k];
+    send(p);
+  };
+  send({ surface: "web", page: location.pathname });
+})();
+</script>
 <script type="module">
 import { merge, extract, splitEvery, rotate, info, watermark, invoiceSheet } from "./core.js";
 import { verify, LICENSE_MAJOR } from "./license.js";
@@ -684,6 +703,10 @@ function progSet(done, total, unit) {
   el.style.width = pct + "%";
   document.querySelector("#progCount").textContent = total ? `${pct}% · ${done}/${total}${unit || ""}` : "";
 }
+function totalMB() {
+  var b = state.files.reduce(function (a, f) { return a + f.buf.byteLength; }, 0);
+  return b / 1048576;
+}
 function progEnd() { const el = document.querySelector("#prog"); if (el) el.hidden = true; }
 
 function toast(msg) {
@@ -770,7 +793,9 @@ $("#runBtn").addEventListener("click", async () => {
       download(bytes, outC);
       toast(`${human(before)} → ${human(bytes.length)}`);
     }
+    if (window.ddTrack) window.ddTrack(state.mode, true, { files: state.files.length, mb: Math.round(totalMB()) });
   } catch (e) {
+    if (window.ddTrack) window.ddTrack(state.mode, false, { files: state.files.length });
     toast(T("fail") + (e.message === "empty-range" ? T("badRange") : e.message || e));
   } finally { progEnd(); btn.disabled = !state.files.length; btn.textContent = old; paint(); }
 });
@@ -778,6 +803,19 @@ $("#runBtn").addEventListener("click", async () => {
 
 applyLang();
 buildKeys();
+
+(function () {
+  var t = document.querySelector("#statToggle");
+  if (!t) return;
+  var off = false; try { off = localStorage.getItem("dd_notrack") === "1"; } catch (e) {}
+  function paint() { t.textContent = off ? "统计：关" : "统计：开"; }
+  paint();
+  t.addEventListener("click", function () {
+    off = !off;
+    try { localStorage.setItem("dd_notrack", off ? "1" : "0"); } catch (e) {}
+    paint();
+  });
+})();
 renderRecent();
 paint();
 bootLicense();
