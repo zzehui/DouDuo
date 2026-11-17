@@ -2,8 +2,8 @@
 (function () {
   var saved = null;
   try { saved = localStorage.getItem("theme"); } catch (e) {}
-  var sys = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
-  var theme = saved === "light" || saved === "dark" ? saved : sys;
+  // 默认浅色（更轻），用户手动切过才尊重选择
+  var theme = saved === "light" || saved === "dark" ? saved : "light";
   document.documentElement.setAttribute("data-theme", theme);
   window.__applyTheme = function (next) {
     // 切主题时先关掉过渡，避免整页"褪色"动画（也避免测试截图拍到中间色）
