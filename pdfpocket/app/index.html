@@ -138,8 +138,6 @@ background:transparent;border:1px solid var(--line);color:var(--dim);border-radi
 <header>
   <div class="logo">PDF</div>
   <div style="flex:1"><h1 data-t="title">DOUDUO PDF 口袋 · 在线版</h1><div class="sub" data-t="sub">所有处理在本机完成，文件不会离开你的电脑。</div></div>
-  <span class="pill" id="planPill">免费版</span>
-  <button class="btn ghost" id="proBtn" data-t="proBtnLabel" style="min-height:36px;padding:6px 12px;font-size:13px">激活 Pro</button>
   <div class="seg" id="langSeg" role="group" data-t-aria="langLabel">
     <button data-lang="zh">中文</button><button data-lang="en">English</button>
   </div>
@@ -237,7 +235,7 @@ background:transparent;border:1px solid var(--line);color:var(--dim);border-radi
     <span data-t="pwaHint">装到桌面，下次点图标直接打开，不用再输网址</span>
     <button class="btn ghost" id="installBtn" data-t="pwaInstall">安装到桌面</button>
   </div>
-  <footer class="tip"><span id="statToggle" style="cursor:pointer;text-decoration:underline">统计：开</span> · <span data-t="tipA">想要批量拆分、加水印、发票拼版？</span><a href="../" data-t="tipB">装浏览器扩展版（Pro）</a></footer><span data-t="tipA">想要批量拆分、加水印、发票拼版？</span><a href="../" data-t="tipB">装浏览器扩展版（Pro）</a></footer>
+  <footer class="tip"><span id="statToggle" style="cursor:pointer;text-decoration:underline">统计：开</span> · <span data-t="tipA">全部功能免费，不用购买</span> · <a href="../" data-t="tipB">了解更多</a></footer>
 </main>
 
 <div class="modal" id="keys" hidden>
@@ -361,8 +359,6 @@ function applyLang() {
   document.querySelectorAll("[data-t-aria]").forEach((el) => { el.setAttribute("aria-label", T(el.dataset.tAria)); });
   document.querySelectorAll("[data-t-title]").forEach((el) => { el.title = T(el.dataset.tTitle); });
   document.querySelectorAll("#langSeg button").forEach((b) => b.classList.toggle("on", b.dataset.lang === LANG));
-  const pb = document.querySelector("#proBtn");
-  if (pb) pb.textContent = T("proBtnLabel");
 }
 
 document.querySelectorAll("#langSeg button").forEach((b) => {
@@ -475,13 +471,8 @@ function applyPlan() {
   const wmt = document.querySelector("#wmText"); if (wmt) wmt.readOnly = !pro;
   const wmb = document.querySelector("#wmProBadge"); if (wmb) wmb.hidden = pro;
   if (!pro && GATED.includes(state.mode)) state.mode = "merge";
-  const pill = $("#planPill");
-  pill.textContent = pro ? T("planPro") : T("planFree");
-  pill.classList.toggle("pro", pro);
-  const tip = document.querySelector("footer.tip"); if (tip) tip.hidden = pro;
+  const tip = document.querySelector("footer.tip"); if (tip) tip.hidden = false;
   document.querySelectorAll("[data-t-ph]").forEach((el) => { el.placeholder = T(el.dataset.tPh); });
-  $("#proBtn").hidden = true;
-  const _pill = $("#planPill"); if (_pill) _pill.hidden = true;
   if (pro) {
     const who = $("#licWho");
     who.hidden = false;
@@ -500,7 +491,6 @@ async function bootLicense() {
   } catch { /* 校验失败就保持免费版 */ }
 }
 
-$("#proBtn").addEventListener("click", () => { $("#proModal").hidden = false; $("#licInput").focus(); });
 $("#proClose").addEventListener("click", () => { $("#proModal").hidden = true; });
 $("#proModal").addEventListener("click", (e) => { if (e.target.id === "proModal") $("#proModal").hidden = true; });
 $("#licBtn").addEventListener("click", async () => {
@@ -514,7 +504,6 @@ $("#licBtn").addEventListener("click", async () => {
   localStorage.setItem("pp_license", key);
   state.plan = "pro"; state.email = v.email; state.major = v.major;
   applyPlan();
-  document.querySelector("#planPill").textContent = T("planPro");
   $("#proModal").hidden = true;
   toast(T("licOk"));
 });
