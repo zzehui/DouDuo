@@ -1,6 +1,6 @@
 // Service Worker：缓存外壳，装到桌面后断网也能用。
 // 版本号改一次 = 用户下次打开拿到新版。
-const V = "pdfpocket-v2.9.4";
+const V = "pdfpocket-v2.9.5";
 const ASSETS = [
   "./", "./index.html", "./core.js", "./compress.js", "./pdf-lib.esm.min.js",
   "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./demo.pdf",

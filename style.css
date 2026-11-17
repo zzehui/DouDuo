@@ -37,9 +37,11 @@ h2.sec{font-size:13px;color:var(--dim);font-weight:600;margin:48px 0 14px;letter
 ul.plain{list-style:none;padding:0;margin:0;display:grid;gap:10px}
 ul.plain li{color:var(--dim);font-size:14px}
 ul.plain b{color:var(--tx)}
-.sitefoot{flex-shrink:0;width:100%;max-width:820px;margin:0 auto;padding:18px 24px 44px;border-top:1px solid var(--line);color:var(--foot);font-size:13px}
-.sitefoot .frow{display:flex;gap:14px;flex-wrap:wrap;justify-content:space-between;align-items:center}
-.sitefoot .flinks{justify-content:flex-start;gap:8px;margin-top:8px;color:var(--dim)}
+.sitefoot{flex-shrink:0;width:100%;max-width:820px;margin:0 auto;padding:18px 24px 44px;border-top:1px solid var(--line);color:var(--foot);font-size:13px;display:flex;justify-content:space-between;align-items:flex-end;gap:18px}
+.sitefoot .fcol{display:flex;flex-direction:column;gap:6px;min-width:0}
+.sitefoot .fright{white-space:nowrap;flex-shrink:0}
+.sitefoot .frow{gap:6px}
+.sitefoot .flinks{display:flex;gap:8px;flex-wrap:wrap;color:var(--dim)}
 .sitefoot a{color:var(--amber-ink);text-decoration:none}
 .sitefoot .flinks a{color:var(--dim)}
 .sitefoot a:hover{color:var(--amber-ink)}
