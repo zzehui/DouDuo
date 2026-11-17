@@ -51,9 +51,17 @@ ul.plain b{color:var(--tx)}
 .subfoot{max-width:760px;margin:0 auto;padding:10px 24px 48px;color:var(--foot);font-size:13px}
 .subfoot a{color:var(--dim);text-decoration:none}
 .subfoot a:hover{color:var(--amber-ink)}
-@media (max-width:560px){.vision{font-size:26px}.wrap{padding:32px 18px 80px}nav{gap:14px;margin-bottom:44px}
-  .sitefoot{flex-direction:column;align-items:flex-start;gap:10px}
-  @media (hover:none){.themebtn{width:44px;height:44px;font-size:17px}}
+@media (max-width:560px){
+  .vision{font-size:26px}
+  .wrap{padding:32px 18px 80px}
+  nav{gap:14px;margin-bottom:44px}
+  .sitefoot{padding-bottom:30px}
+  .sitefoot .frow{gap:6px}
+  .sitefoot .frow+.frow{margin-top:4px}
+  .sitefoot .fleft{flex-direction:column;align-items:flex-start;gap:2px}
+  .sitefoot .fmail{display:none}
+}
+@media (hover:none){.themebtn{width:44px;height:44px;font-size:17px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
 /* ---------- 产品页 ---------- */
