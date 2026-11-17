@@ -1,24 +1,23 @@
 <!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>DOUDUO PDF 口袋 · 使用手册</title><style>
-:root{--bg:#0b0f14;--panel:#131a23;--line:#212c3a;--tx:#e8eef6;--dim:#93a1b3;--amber:#e8a33d;--amber-d:#2a1c07}
+:root{--bg:#f7fafd;--panel:#fff;--line:#e4ecf5;--tx:#0f172a;--dim:#556577;--amber:#f0a63c;--amber-d:#94620f}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif}
 .wrap{max-width:860px;margin:0 auto;padding:40px 22px 80px}
 h1{font-size:28px;margin:0 0 6px} h2{font-size:20px;margin:36px 0 12px;padding-top:18px;border-top:1px solid var(--line)}
-h3{font-size:16px;margin:22px 0 8px} p,li{color:#cfd8e3} code{background:#1b2430;padding:1px 5px;border-radius:5px;font-size:13px}
+h3{font-size:16px;margin:22px 0 8px} p,li{color:#334155} code{background:#eef2f7;padding:1px 5px;border-radius:5px;font-size:13px}
 img{max-width:100%;border-radius:10px;border:1px solid var(--line);margin:12px 0}
 table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px} th,td{border:1px solid var(--line);padding:8px 10px;text-align:left}
-th{background:#161f2a} blockquote{margin:14px 0;padding:10px 14px;border-left:3px solid var(--amber);background:#141b24;border-radius:0 8px 8px 0;color:var(--dim)}
-a{color:var(--amber)} .back{display:inline-block;margin-bottom:18px;color:var(--dim);text-decoration:none;font-size:14px}
+th{background:#f1f5fa} blockquote{margin:14px 0;padding:10px 14px;border-left:3px solid var(--amber);background:#fff7e8;border-radius:0 8px 8px 0;color:var(--dim)}
+a{color:var(--amber-d)} .back{display:inline-block;margin-bottom:18px;color:var(--dim);text-decoration:none;font-size:14px}
 </style></head><body><div class="wrap">
 <a class="back" href="../">← 回到 PDF 口袋</a>
 <h1>DOUDUO PDF 口袋 · 功能点与使用手册</h1>
-<p>版本 1.3.0 ｜ 2026-11-14</p>
+<p>版本 1.5.0 ｜ 2026-11-17</p>
 <hr />
 <blockquote>
-<p><strong>当前版本：1.4.5</strong>——免费版 = <strong>合并 + 压缩</strong>（不限文件数、不限页数）。
-拆分、旋转、图片转 PDF、发票拼版、加水印是 <strong>Pro</strong>（39 元一次买断）：免费用户能看到这些标签并带 <code>Pro</code> 徽标，点一下会提示激活。</p>
+<p>全部功能免费：合并、压缩、拆分、旋转、水印、图片转 PDF。</p>
 </blockquote>
 <h2>一句话</h2>
 <p><strong>在浏览器里把 PDF 合并、压缩——文件不上传，全部在你电脑上算完。</strong></p>
@@ -28,7 +27,7 @@ a{color:var(--amber)} .back{display:inline-block;margin-bottom:18px;color:var(--
 <p><strong>安装（二选一）</strong></p>
 <ol>
 <li><strong>商店版</strong>：Edge 加载项商店搜「DOUDUO PDF 口袋」，点安装。</li>
-<li><strong>本地版</strong>：解压 <code>pdfpocket-1.3.0-local.zip</code> → 打开 <code>edge://extensions</code>（或 <code>chrome://extensions</code>）→ 打开右上角「开发人员模式」→「加载解压缩的扩展」→ 选解压出来的文件夹。</li>
+<li><strong>本地版</strong>：解压 <code>pdfpocket-1.5.0-local.zip</code> → 打开 <code>edge://extensions</code>（或 <code>chrome://extensions</code>）→ 打开右上角「开发人员模式」→「加载解压缩的扩展」→ 选解压出来的文件夹。</li>
 </ol>
 <p><strong>用法</strong></p>
 <p>点工具栏里的橙色图标 → 打开工作台 → 把 PDF 拖进灰色虚线框（或点「选择 PDF」）→ 选一个标签页 → 点右下角按钮 → 文件自动下载。</p>
@@ -67,7 +66,7 @@ a{color:var(--amber)} .back{display:inline-block;margin-bottom:18px;color:var(--
 </tr>
 <tr>
 <td>标签页</td>
-<td>合并 / 拆分 / 旋转 / 压缩 / 图片转 PDF（Pro 多一个「发票拼版」）</td>
+<td>合并 / 拆分 / 旋转 / 压缩 / 图片转 PDF</td>
 </tr>
 <tr>
 <td>灰色虚线框</td>
@@ -87,17 +86,17 @@ a{color:var(--amber)} .back{display:inline-block;margin-bottom:18px;color:var(--
 </tr>
 </tbody>
 </table>
-<p><img alt="工作台" src="screens/19-workbench-zh.webp" /></p>
+<p><img alt="工作台" src="screens/19-workbench-zh.png" /></p>
 <hr />
 <h2>处理时你会看到什么</h2>
 <p>拖进文件、点右下角按钮之后：</p>
 <ol>
-<li><strong>进度条</strong>出现在底部，写着「合并中… 40% · 2/5 个文件」</li>
-<li>合并按文件数、旋转/压缩/发票按页、图片转 PDF 按张数</li>
-<li>小于 0.3 秒的任务不显示，免得一闪而过</li>
-<li><strong>完成提示</strong>给出三样东西：文件名、体积、用时</li>
-<li>例：<code>已完成：合同-合并.pdf（2 KB · 1.3s）</code></li>
-<li>压缩还会带上前后对比：<code>14.2 MB → 13.6 MB（-4% · 8.4s）</code></li>
+<li><strong>进度条</strong>出现在底部，写着「合并中… 40% · 2/5 个文件」
+   - 合并按文件数、旋转/压缩按页、图片转 PDF 按张数
+   - 小于 0.3 秒的任务不显示，免得一闪而过</li>
+<li><strong>完成提示</strong>给出三样东西：文件名、体积、用时
+   - 例：<code>已完成：合同-合并.pdf（2 KB · 1.3s）</code>
+   - 压缩还会带上前后对比：<code>14.2 MB → 13.6 MB（-4% · 8.4s）</code></li>
 </ol>
 <h3>输出文件名不用手填</h3>
 <p>默认跟着第一个源文件走：</p>
@@ -142,7 +141,7 @@ a{color:var(--amber)} .back{display:inline-block;margin-bottom:18px;color:var(--
 </blockquote>
 <hr />
 <h2>功能二：拆分</h2>
-<p><img alt="拆分标签页" src="screens/24-split-zh.webp" /></p>
+<p><img alt="拆分标签页" src="screens/24-split-zh.png" /></p>
 <p><strong>用途</strong>：把一份大 PDF 拆成若干份（按章节、按页数、把某几页单独拿出来）。</p>
 <p><strong>两种模式（单选）</strong></p>
 <table>
@@ -175,7 +174,7 @@ a{color:var(--amber)} .back{display:inline-block;margin-bottom:18px;color:var(--
 <p><strong>细节</strong></p>
 <ul>
 <li>拆分出来的文件<strong>顺序与页码升序一致</strong>，不受输入顺序影响。</li>
-<li>批量导出多份是 Pro 功能；免费用户可以拆分，但只出第一份（会提示）。</li>
+<li>每份都会下载；浏览器可能会拦「多文件下载」，允许即可。</li>
 </ul>
 <p><strong>真实效果</strong></p>
 <p><img alt="功能二：拆分" src="screens/real/split.png" /></p>
@@ -209,7 +208,7 @@ a{color:var(--amber)} .back{display:inline-block;margin-bottom:18px;color:var(--
 <p>文字版的原因：字体是<strong>全文档共用</strong>的一份资源，每一份拆分文件都得带上它用到的整套字体，否则打开就是乱码。这不是重复打包。</p>
 <p>如果拆出来的每份都很大，工具会在完成提示里直接说明，不用自己猜。</p>
 <h2>功能三：旋转</h2>
-<p><img alt="旋转标签页" src="screens/25-rotate-zh.webp" /></p>
+<p><img alt="旋转标签页" src="screens/25-rotate-zh.png" /></p>
 <p><strong>用途</strong>：扫描件方向歪了、手机拍的横过来了。</p>
 <p><strong>步骤</strong></p>
 <ol>
@@ -231,7 +230,7 @@ a{color:var(--amber)} .back{display:inline-block;margin-bottom:18px;color:var(--
 </blockquote>
 <hr />
 <h2>功能四：压缩</h2>
-<p><img alt="压缩标签页" src="screens/26-compress-zh.webp" /></p>
+<p><img alt="压缩标签页" src="screens/26-compress-zh.png" /></p>
 <p><strong>用途</strong>：材料超过上传限制（常见 10MB / 20MB）、邮件发不出去。</p>
 <p><strong>步骤</strong></p>
 <ol>
@@ -284,45 +283,18 @@ a{color:var(--amber)} .back{display:inline-block;margin-bottom:18px;color:var(--
 </blockquote>
 <hr />
 <h2>功能五：图片转 PDF</h2>
-<p><img alt="图片转 PDF" src="screens/27-img-zh.webp" /></p>
+<p><img alt="图片转 PDF" src="screens/27-img-zh.png" /></p>
 <p><strong>用途</strong>：手机拍的文件、扫描件截图、身份证照片，要交一份 PDF。</p>
 <p><strong>步骤</strong>
 1. 拖入图片（JPG / PNG，可多选）
 2. 自动切到「图片转 PDF」，点「转成 PDF」</p>
-<p><strong>细节</strong></p>
+<p><strong>细节</strong>
+- 每张图一页 A4，等比缩放居中，留 24pt 边距，不裁切</p>
 <ul>
-<li>每张图一页 A4，等比缩放居中，留 24pt 边距，不裁切</li>
-<li>免费版是 Pro 功能，激活后才能用</li>
 <li>不做 OCR：图片里的字仍是图片，不能搜索</li>
 </ul>
-<h2>功能六：发票拼版（Pro）</h2>
-<p><img alt="发票拼版" src="screens/20-invoice-zh.webp" /></p>
-<p><strong>解决什么</strong>：报销时一堆单页发票、回单，一张 A4 只放一张太浪费，打印出来还要自己剪。</p>
-<p><strong>怎么做</strong>：</p>
-<ol>
-<li>切到「发票拼版」标签</li>
-<li>把多份 PDF 拖进来（发票、回单、凭证都行；一份多页也可以，会按页依次排）</li>
-<li>选版式：目前是「A4 每页 2 张」</li>
-<li>点右下角「拼版并下载」</li>
-</ol>
-<p><strong>输出长什么样</strong>：</p>
-<ul>
-<li>一个 A4 纵向 PDF，<strong>每页 2 张</strong>，等比缩放居中</li>
-<li>两张之间一条<strong>裁切虚线</strong></li>
-<li>左上角自动标序号（1、2、3…），按你拖入的顺序</li>
-</ul>
-<p><strong>打印注意</strong>：打印时选「实际大小 / 100%」，不要选「适应页面」——缩放会让裁切线和纸张边缘对不上。</p>
-<p><strong>限制</strong>：</p>
-<ul>
-<li>只吃 PDF；图片（.jpg/.png）请先用「图片转 PDF」转一下</li>
-<li>不做 OCR，不识别金额和发票号，只是排版</li>
-<li>每页 2 张是当前唯一版式（4 张版要改代码，还没做）</li>
-</ul>
-<blockquote>
-<p>这是 Pro 功能：免费用户能看到标签，但带 <code>Pro</code> 徽标、点开会提示激活。Pro 39 元一次买断。</p>
-</blockquote>
-<h2>功能七：加文字水印（Pro）</h2>
-<p><img alt="加水印" src="screens/21-watermark-zh.webp" /></p>
+<h2>功能六：加文字水印</h2>
+<p><img alt="加水印" src="screens/21-watermark-zh.png" /></p>
 <p><strong>解决什么</strong>：发给外部前打个「内部资料」「禁止外传」「机密」的标，或者给自己文件做版本标记。</p>
 <p><strong>怎么做</strong>：合并标签页 → 勾「加水印」→ 输入文字（不填就用默认：中文界面「内部资料」、英文界面 <code>CONFIDENTIAL</code>）→ 点「合并并下载」。</p>
 <p><strong>效果</strong>：</p>
@@ -332,92 +304,7 @@ a{color:var(--amber)} .back{display:inline-block;margin-bottom:18px;color:var(--
 <li>只画完整落在页面内的水印，不会被页边裁掉半个字</li>
 </ul>
 <p><strong>限制</strong>：水印是叠加在页面上的图层，不是真正的加密或权限控制——能被截图、能被 PDF 编辑器删掉。</p>
-<blockquote>
-<p>这是 Pro 功能。Pro 39 元一次买断（不是订阅）。</p>
-</blockquote>
-<h2>Pro 怎么激活</h2>
-<ol>
-<li>点右上角「Pro」→ 弹窗里有「已经买过？把授权码粘到下面」</li>
-<li>粘贴授权码（形如 <code>xxxxx.yyyyy</code>）→ 点「激活」</li>
-<li>右上角变成 <code>Pro</code>，发票拼版 / 水印 立即出现</li>
-</ol>
-<p>授权码<strong>不绑机器</strong>：换电脑重新粘一次即可，断网也能验证（本地验签，不联网、不注册账号）。</p>
-<h2>免费版与 Pro</h2>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>免费版</th>
-<th>Pro（39 元，一次买断）</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>合并</td>
-<td>✓ 不限文件数 / 页数</td>
-<td>✓</td>
-</tr>
-<tr>
-<td>压缩</td>
-<td>✓ 三档</td>
-<td>✓</td>
-</tr>
-<tr>
-<td>自定义输出文件名</td>
-<td>✓</td>
-<td>✓</td>
-</tr>
-<tr>
-<td>拆分 / 抽取（含批量导出）</td>
-<td>—</td>
-<td>✓</td>
-</tr>
-<tr>
-<td>旋转</td>
-<td>—</td>
-<td>✓</td>
-</tr>
-<tr>
-<td>图片转 PDF</td>
-<td>—</td>
-<td>✓</td>
-</tr>
-<tr>
-<td>发票拼版</td>
-<td>—</td>
-<td>✓</td>
-</tr>
-<tr>
-<td>加水印</td>
-<td>—</td>
-<td>✓</td>
-</tr>
-<tr>
-<td>价格</td>
-<td>免费</td>
-<td>一次买断，后续新功能不再收费</td>
-</tr>
-</tbody>
-</table>
-<blockquote>
-<p>为什么这么分：文件数和页数是可以绕过的（分两批合并即可），所以免费版在「数量」上完全不限，Pro 卖的是<strong>进阶功能</strong>。</p>
-</blockquote>
-<p><strong>真实效果</strong></p>
-<p><img alt="功能五：图片转 PDF" src="screens/real/img2pdf.png" /></p>
-<blockquote>
-<p>处理前 → 处理后：手机截图（1200×754）变成一页 A4，等比缩放、居中，四边留 24pt。</p>
-</blockquote>
-<p><strong>真实效果</strong></p>
-<p><img alt="功能六：发票拼版（Pro）" src="screens/real/invoice.png" /></p>
-<blockquote>
-<p>处理前 → 处理后：3 份 2 页的单据（共 6 页）拼成 3 页 A4，每页 2 张，中间有裁切线、左上角有顺序号。</p>
-</blockquote>
-<p><strong>真实效果</strong></p>
-<p><img alt="功能七：加文字水印（Pro）" src="screens/real/watermark.png" /></p>
-<blockquote>
-<p>处理前 → 处理后：2 页论文叠上「内部资料」，斜 30° 平铺，浅灰不挡字，正文仍可选中。</p>
-</blockquote>
-<hr />
+<blockquote></blockquote>
 <h2>隐私：文件去哪了？</h2>
 <p><strong>哪也没去。</strong></p>
 <ul>
@@ -442,7 +329,7 @@ a{color:var(--amber)} .back{display:inline-block;margin-bottom:18px;color:var(--
 <p><strong>Q：安全吗？会不会偷偷上传？</strong>
 扩展没有网络权限——它在系统层面就发不出去，你也可以在 <code>edge://extensions</code> 里点「详细信息」核对我申请的权限只有「存储」。</p>
 <p><strong>Q：为什么拆出来只有一个文件？</strong>
-免费版只导出第一份。Pro 才批量导出。</p>
+每个分片都会单独下载；如果浏览器拦了「多文件下载」，允许即可。</p>
 <p><strong>Q：能撤销吗？</strong>
 不能。所有操作都生成<strong>新文件</strong>，原文件不动——所以「撤销」就是把下载的新文件删掉。</p>
 <hr />
@@ -458,4 +345,5 @@ a{color:var(--amber)} .back{display:inline-block;margin-bottom:18px;color:var(--
 <h2>反馈</h2>
 <p>用着别扭、少了哪个功能、哪里看不懂——直接告诉我，我按你说的改。</p>
 <p><strong>邮箱：zzhlmgj@163.com</strong></p>
-<p>扩展里也内置了入口：工作台页脚 <strong>「报告问题」</strong> → 会把版本、浏览器、最近一次报错这类诊断信息列出来（<strong>扩展不联网，不会自动上传</strong>），你复制后连同出问题的那份 PDF 一起发我即可。</p></div></body></html>
+<p>扩展里也内置了入口：工作台页脚 <strong>「报告问题」</strong> → 会把版本、浏览器、最近一次报错这类诊断信息列出来（<strong>扩展不联网，不会自动上传</strong>），你复制后连同出问题的那份 PDF 一起发我即可。</p>
+</div></body></html>
