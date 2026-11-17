@@ -149,10 +149,10 @@ background:transparent;border:1px solid var(--line);color:var(--dim);border-radi
   <div class="tabs" id="tabs">
     <button class="tab on" data-mode="merge" data-t="merge">合并</button>
     <button class="tab" data-mode="compress" data-t="compress">压缩</button>
-    <button class="tab" data-mode="split" data-t="split">拆分<b class="prodot" hidden>Pro</b></button>
-    <button class="tab" data-mode="rotate" data-t="rotate">旋转<b class="prodot" hidden>Pro</b></button>
-    <button class="tab" data-mode="wm" data-t="tabWm">水印<b class="prodot" hidden>Pro</b></button>
-    <button class="tab" data-mode="img" data-t="img">图片转 PDF<b class="prodot" hidden>Pro</b></button>
+    <button class="tab" data-mode="split" data-t="split">拆分</button>
+    <button class="tab" data-mode="rotate" data-t="rotate">旋转</button>
+    <button class="tab" data-mode="wm" data-t="tabWm">水印</button>
+    <button class="tab" data-mode="img" data-t="img">图片转 PDF</button>
   </div>
 
   <div class="drop" id="drop">
@@ -179,7 +179,7 @@ background:transparent;border:1px solid var(--line);color:var(--dim);border-radi
   <div class="opt on" id="opt-merge">
     <div class="row"><span class="hint" data-t="mergeHint">按列表顺序合并；拖拽排序请在扩展版里用 ↑↓</span></div>
     <div class="row" id="wmWrap">
-      <label id="wmLabelWrap"><input type="checkbox" id="wmOn"> <span data-t="wmLabel">加水印</span><b class="prodot" id="wmProBadge" hidden>Pro</b></label>
+      <label id="wmLabelWrap"><input type="checkbox" id="wmOn"> <span data-t="wmLabel">加水印</span></label>
       <input type="text" id="wmText" maxlength="40" data-t-ph="wmPh" placeholder="内部资料">
     </div>
     <div class="row" id="outWrap">
@@ -282,7 +282,7 @@ const DICT = {
   zh: {title:"DOUDUO PDF 口袋 · 在线版", sub:"所有处理在本机完成，文件不会离开你的电脑。", merge:"合并", split:"拆分",
         rotate:"旋转", compress:"压缩", img:"图片转 PDF", drop:"把 PDF 或图片拖进来，或点这里选择",
         dropSub:"支持多选 · 不上传 · 断网也能用 · ", demo:"用样例文件试试", noFiles:"还没有文件 · 拖进来或点「选择 PDF」", again:"继续处理", dlAgain:"再下载一次", outLabel:"输出文件名", outPh:"合并.pdf", tagMerge:"合并", tagCompress:"压缩", tagExtract:"抽取", tagRotate:"旋转", tagWm:"水印", tagImg:"图片转PDF", outMore:"等{0}个", recentTitle:"最近处理", recentClear:"清空", recentEmpty:"", keysTitle:"快捷键", close:"关闭", k1:"打开文件", k2:"撤销删除/继续处理", k3:"关闭弹窗", k4:"开始处理", k5:"查看快捷键", newVersion:"有新版本，点这里刷新", again:"继续处理", dlAgain:"再下载一次", outLabel:"输出文件名", outPh:"合并.pdf", tagMerge:"合并", tagCompress:"压缩", tagExtract:"抽取", tagRotate:"旋转", tagWm:"水印", tagInvoice:"发票拼版", tagImg:"图片转PDF", outMore:"等{0}个", recentTitle:"最近处理", recentClear:"清空", recentEmpty:"", keysTitle:"快捷键", close:"关闭", k1:"打开文件", k2:"撤销删除/继续处理", k3:"关闭弹窗", k4:"开始处理", k5:"查看快捷键", meta:"{0} · {1}", newVersion:"有新版本，点这里刷新", run:"开始处理",
-        tipA:"拆分、旋转、水印、发票拼版属于 Pro · ", tipB:"点右上角「激活 Pro」", langLabel:"界面语言", working:"处理中…", tabWm:"水印", wmHint:"给 PDF 叠一层斜向文字水印，可当草稿/内部资料标记。文字可选中、可搜索。", splitEvery:"每 N 页切一份", splitRange:"只取这些页", rotAll:"整份", rotRange:"只转这几页", deg90:"顺时针 90°", deg270:"顺时针 270°", lvLight:"轻（2200px）", lvNormal:"标准（1600px）", lvStrong:"强（1100px）", themeToDark:"切到深色", themeToLight:"切到浅色",
+        tipA:"全部功能免费 · ", tipB:"不限文件数与页数", langLabel:"界面语言", working:"处理中…", tabWm:"水印", wmHint:"给 PDF 叠一层斜向文字水印，可当草稿/内部资料标记。文字可选中、可搜索。", splitEvery:"每 N 页切一份", splitRange:"只取这些页", rotAll:"整份", rotRange:"只转这几页", deg90:"顺时针 90°", deg270:"顺时针 270°", lvLight:"轻（2200px）", lvNormal:"标准（1600px）", lvStrong:"强（1100px）", themeToDark:"切到深色", themeToLight:"切到浅色",
         merged:"合并并下载", splitBtn:"拆分并下载", rotBtn:"旋转并下载", compBtn:"压缩并下载", imgBtn:"转成 PDF",
         added:"已加入样例.pdf（3 页）", fail:"处理失败：", noImg:"先加几张图片", demoFail:"样例加载失败：",
         splitOne:"份，在线版只下载第一份；批量导出请用扩展版", badRange:"页码写错了", unit:" 个文件 · ",
@@ -292,9 +292,9 @@ const DICT = {
         pagesUnit:"页", unitFiles:"个文件", unitPages:"页", unitImages:"张图", unitParts:"份", up:"上移", down:"下移", invBtn:"拼版并下载", splitHint:"每 N 页切一份，或只取指定页（1-3,5）", imgHint:"每张图一页 A4，等比缩放居中，最多 5 张", compHint:"重压缩内嵌图片，文字与矢量保持清晰",
         pwaHint:"装到桌面，下次点图标直接打开", pwaInstall:"安装到桌面", pwaDone:"已安装，桌面见", folder:"合并整个文件夹…", folderPick:"选一个文件夹，把里面所有 PDF 按文件名顺序合成一个", folderNone:"这个文件夹里没有 PDF", demoName:"样例.pdf", folderDone:"已加入 {0} 个 PDF", folderNoSupport:"这个浏览器不支持选文件夹，请用「选择 PDF」多选", pwaManual:"没有安装入口？用地址栏右侧的安装图标",
         wmLabel:"加水印", wmPh:"内部资料", wmDefault:"内部资料", close:"关闭",
-        proBuy:"查看购买方式", proBuyHint:"还没有授权码？ ", planFree:"免费版", planPro:"Pro",
-        licOk:"Pro 已激活", licOn:"已激活：{0}（第 {1} 代授权）", licOnNoMail:"已激活（第 {0} 代授权）", licBad:"授权码无效", licFmt:"格式不对：应该是「一串字符.一串字符」", licExpired:"这个码已过期",
-        needPro:"这是 Pro 功能：先激活授权码"},
+        __unused_proBuy:"查看购买方式", __unused_proBuyHint:"还没有授权码？ ", __unused_planFree:"免费版", __unused_planPro:"Pro",
+        __unused_licOk:"Pro 已激活", __unused_licOn:"已激活：{0}（第 {1} 代授权）", __unused_licOnNoMail:"已激活（第 {0} 代授权）", __unused_licBad:"授权码无效", __unused_licFmt:"格式不对：应该是「一串字符.一串字符」", licExpired:"这个码已过期",
+        __unused_needPro:"这是 Pro 功能：先激活授权码"},
   en: {title:"DOUDUO PDF Pocket · Web", sub:"Everything runs on your machine. Your files never leave your computer.", merge:"Merge",
         split:"Split", rotate:"Rotate", compress:"Compress", img:"Images to PDF", drop:"Drop PDFs or images here, or click to choose",
         dropSub:"Multiple files · no upload · works offline · ", demo:"try a sample file", noFiles:"No files yet — drop files or click Choose PDFs", again:"Process more", dlAgain:"Download again", outLabel:"Output file name", outPh:"merged.pdf", tagMerge:"merged", tagCompress:"compressed", tagExtract:"extracted", tagRotate:"rotated", tagWm:"watermarked", tagImg:"images", outMore:"+{0}", recentTitle:"Recent", recentClear:"Clear", keysTitle:"Keyboard shortcuts", close:"Close", k1:"Open files", k2:"Undo delete / keep processing", k3:"Close dialog", k4:"Run", k5:"Show shortcuts", newVersion:"Update ready — refresh", again:"Process more", dlAgain:"Download again", outLabel:"Output file name", outPh:"merged.pdf", tagMerge:"merged", tagCompress:"compressed", tagExtract:"extracted", tagRotate:"rotated", tagWm:"watermarked", tagImg:"images", outMore:"+{0}", recentTitle:"Recent", recentClear:"Clear", keysTitle:"Keyboard shortcuts", close:"Close", k1:"Open files", k2:"Undo delete / keep processing", k3:"Close dialog", k4:"Run", k5:"Show shortcuts", meta:"{0} · {1}", newVersion:"Update ready — refresh", run:"Run",
@@ -308,10 +308,10 @@ const DICT = {
         pagesUnit:"pages", unitFiles:" files", unitPages:" pages", unitImages:" images", unitParts:" parts", up:"Move up", down:"Move down", invBtn:"Build sheet & download", splitHint:"Split every N pages, or take specific pages (1-3,5)", imgHint:"One A4 page per image, scaled to fit. Max 5 images.", compHint:"Re-compresses embedded images; text and vectors stay crisp.",
         pwaHint:"Install to desktop — open it next time without typing a URL", pwaInstall:"Install to desktop", pwaDone:"Installed — check your desktop", folder:"Merge a whole folder…", folderPick:"Pick a folder; every PDF in it is merged in name order", folderNone:"No PDFs in that folder", demoName:"sample.pdf", folderDone:"Added {0} PDFs", folderNoSupport:"This browser can't pick a folder — use Choose PDFs", pwaManual:"No install prompt — use the install icon in the address bar",
         wmLabel:"Add watermark", wmPh:"CONFIDENTIAL", wmDefault:"CONFIDENTIAL",
-        proTitle:"Activate Pro", proBtnLabel:"Activate Pro", proBody:"Paste the licence key you received. Verified offline, no network.", activate:"Activate", close:"Close",
-        proBuy:"See how to buy", proBuyHint:"No key yet? ", planFree:"Free", planPro:"Pro",
-        licOk:"Pro activated", licOn:"Activated for {0} (gen {1})", licOnNoMail:"Activated (gen {0})", licBad:"Invalid licence key", licFmt:"Wrong format — it should look like “xxxxx.xxxxx”", licExpired:"That key has expired",
-        needPro:"Pro feature — activate a licence first"}
+        __unused_proTitle:"Activate Pro", __unused_proBtnLabel:"Activate Pro", __unused_proBody:"Paste the licence key you received. Verified offline, no network.", activate:"Activate", close:"Close",
+        __unused_proBuy:"See how to buy", __unused_proBuyHint:"No key yet? ", __unused_planFree:"Free", __unused_planPro:"Pro",
+        __unused_licOk:"Pro activated", __unused_licOn:"Activated for {0} (gen {1})", __unused_licOnNoMail:"Activated (gen {0})", __unused_licBad:"Invalid licence key", __unused_licFmt:"Wrong format — it should look like “xxxxx.xxxxx”", licExpired:"That key has expired",
+        __unused_needPro:"Pro feature — activate a licence first"}
 };
 let LANG = (() => {
   try { const saved = localStorage.getItem("lang"); if (saved === "zh" || saved === "en") return saved; } catch (e) {}

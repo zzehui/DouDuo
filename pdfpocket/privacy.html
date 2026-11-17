@@ -35,18 +35,17 @@
   关闭标签页后内存里的文件即被释放。</p>
 
   <h2>3. 本地存储了什么</h2>
-  <p>只有一个东西：如果你是 Pro 用户，扩展会在 <code>chrome.storage.local</code> 里存你输入的许可证字符串，
-  用来下次打开时免于重复激活。这个值不会离开你的电脑。</p>
+  <p>扩展在工作台里保存你的界面偏好（深浅主题、语言）和最近处理过的文件名，仅存在
+  <code>chrome.storage.local</code> 和浏览器本地数据库里，不会离开你的电脑。</p>
 
   <h2>4. 权限说明</h2>
   <ul>
-    <li><code>storage</code>：仅用于保存上面的许可证。</li>
+    <li><code>storage</code>：仅用于保存界面偏好与最近文件记录。</li>
   </ul>
   <p>扩展不申请任何网站访问权限，不读取你浏览的网页内容。</p>
 
   <h2>5. 第三方</h2>
-  <p>扩展不加载任何远程代码，不调用任何第三方接口。购买 Pro 时的支付与订单信息由支付服务商
-  （如 Lemon Squeezy / Paddle）按其隐私政策处理，我们不接触你的卡号。</p>
+  <p>扩展不加载任何远程代码，不调用任何第三方接口，也不含统计脚本。</p>
 
   <h2>6. 访问统计</h2>
   <p>官网页面（首页、产品页、关于页、本隐私页）为了知道「有没有人来」，加载两个第三方统计：</p>
@@ -64,7 +63,7 @@
   <p>本扩展不面向 13 岁以下儿童，也不收集任何人的个人信息。</p>
 
   <h2>8. 数据删除</h2>
-  <p>没有服务器端数据可删。要清除本地许可证，卸载扩展即可。</p>
+  <p>没有服务器端数据可删。要清除本地偏好与最近文件记录，卸载扩展即可。</p>
 
   <h2>9. 变更</h2>
   <p>若未来版本引入任何联网功能，会先更新本页并在扩展内明确提示，不会静默改变行为。</p>
@@ -77,9 +76,9 @@
   <h2 id="en">English</h2>
   <p><strong>DOUDUO PDF Pocket collects nothing.</strong> No account, no analytics, no ads, no network calls.
   Your PDFs are processed entirely on your machine with <code>pdf-lib</code> and saved through the
-  browser's own download mechanism. The only thing stored locally is your Pro licence string
+  browser's own download mechanism. The only things stored locally are your UI preferences and recent file names
   (in <code>chrome.storage.local</code>) so you don't have to re-activate. The extension requests
-  no host permissions and never reads the pages you browse. Payments for Pro are handled by a
+  no host permissions and never reads the pages you browse. It contains no analytics script either, and no
   third-party checkout provider; we never see your card details. Contact:
   <a href="mailto:zzhlmgj@163.com">zzhlmgj@163.com（微信同号）</a>.</p>
 </main>
