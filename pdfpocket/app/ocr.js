@@ -10,6 +10,39 @@ pdfjs.GlobalWorkerOptions.workerSrc = VENDOR + 'pdfjs/pdf.worker.min.mjs';
 const RENDER_SCALE = 2;        // ≈150dpi，够识别，内存可控
 const MIN_FONT = 3.5;
 
+
+/** 灰度 + Otsu 二值化 + 小图放大到 ~1400px 宽：扫描件对比度差时识别率提升明显 */
+function prepCanvas(canvas) {
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  const { width: W, height: H } = canvas;
+  const img = ctx.getImageData(0, 0, W, H);
+  const d = img.data;
+
+  const hist = new Uint32Array(256);
+  const gray = new Uint8ClampedArray(W * H);
+  for (let i = 0, j = 0; i < d.length; i += 4, j++) {
+    const g = (d[i] * 299 + d[i + 1] * 587 + d[i + 2] * 114) / 1000 | 0;
+    gray[j] = g; hist[g]++;
+  }
+  const total = W * H;
+  let sum = 0; for (let t = 0; t < 256; t++) sum += t * hist[t];
+  let sumB = 0, wB = 0, best = 0, thr = 128;
+  for (let t = 0; t < 256; t++) {
+    wB += hist[t]; if (!wB) continue;
+    const wF = total - wB; if (!wF) break;
+    sumB += t * hist[t];
+    const mB = sumB / wB, mF = (sum - sumB) / wF;
+    const between = wB * wF * (mB - mF) * (mB - mF);
+    if (between > best) { best = between; thr = t; }
+  }
+  for (let i = 0, j = 0; i < d.length; i += 4, j++) {
+    const v = gray[j] > thr ? 255 : 0;
+    d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255;
+  }
+  ctx.putImageData(img, 0, 0);
+  return canvas;
+}
+
 let _worker = null;
 let _fontBytes = null;
 
@@ -37,6 +70,11 @@ async function getWorker(langs, onProgress) {
     logger: (m) => onProgress && onProgress(m),
   });
   w.__langs = langs;
+  await w.setParameters({
+    tessedit_pageseg_mode: '6',        // 整页当一块文本，书籍/合同效果最好
+    preserve_interword_spaces: '1',
+    user_defined_dpi: '300',
+  });
   _worker = w;
   return w;
 }
@@ -75,12 +113,21 @@ export async function makeSearchable(bytes, opts = {}) {
   const worker = await getWorker(langs, (m) => onLog && onLog(m));
   const fontBytes = await getFont();
 
+  const stats = [];
+  if (typeof window !== 'undefined') window.__ocrStats = stats;
   const out = await PDFDocument.load(bytes, { ignoreEncryption: true });
   PDFDocument.prototype.registerFontkit(fontkit);
   const font = await out.embedFont(fontBytes, { subset: true });
 
+  let skipped = 0;
   for (let n = from; n <= to; n++) {
+    if (typeof window !== 'undefined' && window.__ocrCancel) throw new Error('ocr-cancelled');
     const page = await src.getPage(n);
+    try {
+      const tc = await page.getTextContent();
+      const has = tc.items.reduce((k, it) => k + (it.str || '').trim().length, 0);
+      if (has >= 20) { skipped++; if (onProgress) onProgress(n - from + 1, to - from + 1); continue; }
+    } catch (e) {}
     const viewport = page.getViewport({ scale: RENDER_SCALE });
     const canvas = document.createElement('canvas');
     canvas.width = Math.ceil(viewport.width);
@@ -89,6 +136,7 @@ export async function makeSearchable(bytes, opts = {}) {
     ctx.fillStyle = '#fff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     await page.render({ canvasContext: ctx, viewport }).promise;
+    prepCanvas(canvas);
 
     const { data } = await worker.recognize(canvas);
 
@@ -103,6 +151,7 @@ export async function makeSearchable(bytes, opts = {}) {
     const sx = pw / canvas.width;
     const sy = ph / canvas.height;
 
+    let wordsCharCount = 0, drawnCount = 0;
     for (const line of lines) {
       const words = (line.words || []).filter((w) => w.text && w.text.trim());
       let text;
@@ -120,6 +169,7 @@ export async function makeSearchable(bytes, opts = {}) {
         text = (line.text || '').replace(/\s+/g, ' ').trim();
       }
       if (!text) continue;
+      wordsCharCount += text.length;
       const b = line.bbox;
       const size = Math.max(MIN_FONT, (b.y1 - b.y0) * sy * 0.82);
       try {
@@ -130,14 +180,18 @@ export async function makeSearchable(bytes, opts = {}) {
           color: rgb(0, 0, 0),
           opacity: 0,   // 不可见但可搜/可复制
         });
+        drawnCount++;
       } catch (e) { /* 罕见字形跳过 */ }
     }
 
+    stats.push({ page: n, lines: lines.length, chars: wordsCharCount, drawn: drawnCount });
     canvas.width = canvas.height = 0;
     if (onProgress) onProgress(n - from + 1, to - from + 1);
   }
 
-  return await out.save();
+  const bytes2 = await out.save();
+  bytes2.__skipped = skipped;
+  return bytes2;
 }
 
 /** 校验：用 pdf.js 重新读一遍，看能提出多少文字 */
