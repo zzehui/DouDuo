@@ -582,7 +582,7 @@ function paint() {
   $("#runBtn").textContent = { merge: T("merged"), split: T("splitBtn"), rotate: T("rotBtn"), compress: T("compBtn"), img: T("imgBtn") }[state.mode] || T("merged");
 }
 
-const DL = { bytes: null, name: "" };
+let DL = { bytes: null, name: "" };
 function download(bytes, name) {
   const url = URL.createObjectURL(new Blob([bytes], { type: "application/pdf" }));
   const a = document.createElement("a"); a.href = url; a.download = name; a.click();
@@ -712,8 +712,9 @@ $("#runBtn").addEventListener("click", async () => {
       const txt = (($("#wmOnlyText").value || "").trim()) || T("wmDefault");
       const bytes = await watermark(state.files[0].buf, txt);
       const nm = autoOutName(T("tagWm"));
+      const t0 = performance.now();
       download(bytes, nm); DL = { bytes, name: nm };
-      showResult(bytes, nm); doneToast(nm, bytes.byteLength, t0);
+      doneToast(nm, bytes.byteLength, t0);
     } else if (state.mode === "rotate") {
       const scope = document.querySelector('input[name="rm"]:checked').value;
       download(await rotate(state.files[0].buf, scope === "range" ? $("#rotateRange").value.trim() : "", +$("#rotateDeg").value), autoOutName(T("tagRotate")));
