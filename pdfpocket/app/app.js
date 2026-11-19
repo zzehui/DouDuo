@@ -1,9 +1,15 @@
 import { merge, extract, splitEvery, rotate, info, watermark } from "./core.js";
 import { buildModel, move, removeSelected, rotateSelected, insertBlank, exportModel, extractSelected, summary } from "./pages.js";
-import * as pdfjsLib from "./vendor/pdfjs/pdf.min.mjs";
 import { recognizeText } from "./ocr.js";
 import { extractInvoice, toCsv } from "./invoices.js";
-pdfjsLib.GlobalWorkerOptions.workerSrc = "./vendor/pdfjs/pdf.worker.min.mjs";
+let _pdfjsLib = null;
+async function getPdfjsLib() {
+  if (!_pdfjsLib) {
+    _pdfjsLib = await import("./vendor/pdfjs/pdf.min.mjs");
+    _pdfjsLib.GlobalWorkerOptions.workerSrc = "./vendor/pdfjs/pdf.worker.min.mjs";
+  }
+  return _pdfjsLib;
+}
 import { verify, LICENSE_MAJOR } from "./license.js";
 
 const $ = (s) => document.querySelector(s);
@@ -411,7 +417,7 @@ async function renderPages() {
     PG = { src: f.buf, model: await buildModel(f.buf) };
     PGsel = new Set();
   }
-  if (!PG.pdf) PG.pdf = await pdfjsLib.getDocument({ data: f.buf.slice(0) }).promise;
+  if (!PG.pdf) PG.pdf = await (await getPdfjsLib()).getDocument({ data: f.buf.slice(0) }).promise;
   grid.innerHTML = "";
   for (let i = 0; i < PG.model.pages.length; i++) {
     const it = PG.model.pages[i];

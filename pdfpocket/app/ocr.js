@@ -1,11 +1,17 @@
 // 可搜索 PDF（双层 OCR）：渲染每页 → 识别文字 → 把隐形文字垫在原图下面
 // 全部在本地跑：pdf.js 渲染、tesseract 识别、pdf-lib 写回，不走任何网络请求。
-import * as pdfjs from './vendor/pdfjs/pdf.min.mjs';
 import { PDFDocument, rgb } from './pdf-lib.esm.min.js';
-import fontkit from './vendor/fontkit.es.min.js';
 
 const VENDOR = new URL('./vendor/', import.meta.url).href;
-pdfjs.GlobalWorkerOptions.workerSrc = VENDOR + 'pdfjs/pdf.worker.min.mjs';
+// pdf.js（1.4MB worker）与 fontkit（714KB）只在真正用到时才加载，首屏只依赖 pdf-lib
+let _pdfjs = null;
+async function getPdfjs() {
+  if (!_pdfjs) {
+    _pdfjs = await import('./vendor/pdfjs/pdf.min.mjs');
+    _pdfjs.GlobalWorkerOptions.workerSrc = VENDOR + 'pdfjs/pdf.worker.min.mjs';
+  }
+  return _pdfjs;
+}
 
 const RENDER_SCALE = 2;        // ≈150dpi，够识别，内存可控
 const MIN_FONT = 3.5;
@@ -85,7 +91,7 @@ export async function terminate() {
 
 /** 把 PDF 前 n 页的文字提出来，判断是不是扫描件 */
 export async function detectScanned(bytes) {
-  const doc = await pdfjs.getDocument({ data: bytes.slice(0) }).promise;
+  const doc = await (await getPdfjs()).getDocument({ data: bytes.slice(0) }).promise;
   const pages = Math.min(doc.numPages, 3);
   let chars = 0;
   for (let i = 1; i <= pages; i++) {
@@ -105,7 +111,7 @@ export async function detectScanned(bytes) {
  */
 export async function makeSearchable(bytes, opts = {}) {
   const { langs = 'chi_sim+eng', onProgress, onLog } = opts;
-  const src = await pdfjs.getDocument({ data: bytes.slice(0) }).promise;
+  const src = await (await getPdfjs()).getDocument({ data: bytes.slice(0) }).promise;
   const total = src.numPages;
   const from = Math.max(1, opts.from || 1);
   const to = Math.min(total, opts.to || total);
@@ -116,6 +122,7 @@ export async function makeSearchable(bytes, opts = {}) {
   const stats = [];
   if (typeof window !== 'undefined') window.__ocrStats = stats;
   const out = await PDFDocument.load(bytes, { ignoreEncryption: true });
+  const fontkit = (await import("./vendor/fontkit.es.min.js")).default;
   PDFDocument.prototype.registerFontkit(fontkit);
   const font = await out.embedFont(fontBytes, { subset: true });
 
@@ -199,7 +206,7 @@ export async function makeSearchable(bytes, opts = {}) {
 // 只识别、不写回：给「发票信息提取」这类功能用。返回每页纯文本。
 export async function recognizeText(bytes, opts = {}) {
   const { langs = 'chi_sim+eng', onProgress } = opts;
-  const src = await pdfjs.getDocument({ data: bytes.slice(0) }).promise;
+  const src = await (await getPdfjs()).getDocument({ data: bytes.slice(0) }).promise;
   const total = src.numPages;
   const worker = await getWorker(langs, null);
   const texts = [];
@@ -231,7 +238,7 @@ export async function recognizeText(bytes, opts = {}) {
 }
 
 export async function verifySearchable(bytes) {
-  const doc = await pdfjs.getDocument({ data: bytes.slice(0) }).promise;
+  const doc = await (await getPdfjs()).getDocument({ data: bytes.slice(0) }).promise;
   let all = '';
   for (let i = 1; i <= Math.min(doc.numPages, 5); i++) {
     const page = await doc.getPage(i);
