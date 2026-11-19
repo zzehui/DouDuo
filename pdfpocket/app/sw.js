@@ -1,11 +1,11 @@
 // Service Worker：缓存外壳，装到桌面后断网也能用。
 // 版本号改一次 = 用户下次打开拿到新版。
-const V = "pdfpocket-v2.13.2";
+const V = "pdfpocket-v3.0.0";
 // OCR 大件（约 23MB）不进预缓存，避免安装时全量下载
 const OCR_HEAVY = /\/vendor\/(font|tessdata|tesseract|pdfjs)\//;
 const ASSETS = [
   "./", "./index.html", "./core.js", "./compress.js", "./pdf-lib.esm.min.js",
-  "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./demo.pdf",
+  "./app.js", "./pages.js", "./invoices.js", "./ocr.js", "./license.js", "./theme.js", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./demo.pdf",
 ];
 
 self.addEventListener("install", (e) => {
