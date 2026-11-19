@@ -471,6 +471,8 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "?" && !/input|textarea/i.test(document.activeElement.tagName)) { e.preventDefault(); toggleKeys(); }
 });
 
+window.__boot = "imports";
+window.addEventListener("error", (e) => { window.__err = (e.message || "") + " @" + (e.lineno || ""); });
 const state = {
   outTouched: false, mode: "merge", files: [], plan: "free", email: "", major: 0 };
 
@@ -519,9 +521,11 @@ async function bootLicense() {
 
 
 
+window.__boot = "state";
 const drop = $("#drop"), input = $("#fileInput");
 drop.addEventListener("click", () => input.click());
 input.addEventListener("change", (e) => { add([...e.target.files]); input.value = ""; });
+window.__boot = "drop";
 ["dragenter","dragover"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("over"); }));
 ["dragleave","drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
 drop.addEventListener("drop", (e) => add([...e.dataTransfer.files]));
@@ -572,6 +576,7 @@ async function add(list) {
   }
   await renderRecent();
 paint();
+window.__boot = "end";
 }
 
 function human(b) { return b > 1048576 ? (b/1048576).toFixed(1)+" MB" : b > 1024 ? Math.round(b/1024)+" KB" : b+" B"; }
@@ -979,8 +984,10 @@ $("#runBtn").addEventListener("click", async () => {
 });
 
 
+window.__boot = "preLang";
 applyLang();
 buildKeys();
+window.__boot = "lang";
 
 (function () {
   var t = document.querySelector("#statToggle");
