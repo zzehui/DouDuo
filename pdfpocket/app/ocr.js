@@ -195,6 +195,41 @@ export async function makeSearchable(bytes, opts = {}) {
 }
 
 /** 校验：用 pdf.js 重新读一遍，看能提出多少文字 */
+
+// 只识别、不写回：给「发票信息提取」这类功能用。返回每页纯文本。
+export async function recognizeText(bytes, opts = {}) {
+  const { langs = 'chi_sim+eng', onProgress } = opts;
+  const src = await pdfjs.getDocument({ data: bytes.slice(0) }).promise;
+  const total = src.numPages;
+  const worker = await getWorker(langs, null);
+  const texts = [];
+  for (let n = 1; n <= total; n++) {
+    if (typeof window !== 'undefined' && window.__ocrCancel) throw new Error('ocr-cancelled');
+    const page = await src.getPage(n);
+    let existing = '';
+    try {
+      const tc = await page.getTextContent();
+      existing = tc.items.map((it) => it.str || '').join(' ').trim();
+    } catch (e) {}
+    if (existing.length >= 20) { texts.push(existing); if (onProgress) onProgress(n, total); continue; }
+    const viewport = page.getViewport({ scale: RENDER_SCALE });
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.ceil(viewport.width);
+    canvas.height = Math.ceil(viewport.height);
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    await page.render({ canvasContext: ctx, viewport }).promise;
+    const { data } = await worker.recognize(canvas);
+    const lines = (data.lines && data.lines.length)
+      ? data.lines.map((ln) => (ln.text || '').trim()).filter(Boolean)
+      : (data.text || '').split(/\n+/).map((t) => t.trim()).filter(Boolean);
+    texts.push(lines.join('\n'));
+    if (onProgress) onProgress(n, total);
+  }
+  return texts;
+}
+
 export async function verifySearchable(bytes) {
   const doc = await pdfjs.getDocument({ data: bytes.slice(0) }).promise;
   let all = '';

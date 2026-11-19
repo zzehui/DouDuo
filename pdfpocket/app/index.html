@@ -43,6 +43,18 @@
   .bar{position:fixed;left:0;right:0;bottom:0;background:var(--bar);border-top:1px solid var(--line);padding:10px 22px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 -6px 18px rgba(15,23,42,.04)}
   .hint{color:var(--dim);font-size:12.5px}
   #toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:var(--toast);border:1px solid var(--line);padding:9px 16px;border-radius:10px;font-size:13.5px}
+  .invwrap{overflow:auto;max-height:52vh;border:1px solid var(--line);border-radius:10px}
+  .invwrap table{border-collapse:collapse;width:100%;font-size:13px}
+  .invwrap th,.invwrap td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+  .invwrap th{position:sticky;top:0;background:var(--card);font-weight:600;color:var(--dim)}
+  .invwrap td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;padding:6px 0 10px}
+  .pcard{position:relative;border:1px solid var(--line);border-radius:10px;padding:6px;background:var(--card);cursor:pointer;transition:.12s}
+  .pcard:hover{border-color:var(--amber)}
+  .pcard.sel{border-color:var(--amber);box-shadow:0 0 0 2px rgba(240,166,60,.35)}
+  .pcard canvas{width:100%;height:auto;display:block;border-radius:4px}
+  .pthumb.blank{display:flex;align-items:center;justify-content:center;aspect-ratio:1/1.414;font-size:12px;color:var(--dim);border:1px dashed var(--line);border-radius:4px}
+  .pnum{font-size:11.5px;color:var(--dim);text-align:center;padding-top:4px}
   .opt{display:none}
   .opt.on{display:block}
   footer.tip{padding:26px 0 90px;color:var(--dim);font-size:12.5px;text-align:center}
@@ -154,6 +166,8 @@ background:transparent;border:1px solid var(--line);color:var(--dim);border-radi
     <button class="tab" data-mode="wm" data-t="tabWm">水印</button>
     <button class="tab" data-mode="img" data-t="img">图片转 PDF</button>
     <button class="tab" data-mode="ocr" data-t="tabOcr">识别文字</button>
+    <button class="tab" data-mode="page" data-t="tabPage">页面</button>
+    <button class="tab" data-mode="invoice" data-t="tabInvoice">发票</button>
   </div>
 
   <div class="drop" id="drop">
@@ -229,6 +243,33 @@ background:transparent;border:1px solid var(--line);color:var(--dim);border-radi
       <button class="btn ghost" id="ocrCancel" hidden data-t="cancel">取消</button>
     </div>
   </div>
+  <div class="opt" id="opt-page">
+    <div class="row"><span class="hint" data-t="pgHint">拖动缩略图改顺序，点缩略图选中；选中后可删除、提取、旋转，也能插入空白页。导出的是一份新文件，原文件不动。</span></div>
+    <div class="row">
+      <button class="btn ghost" id="pgUp" data-t="pgUp">上移</button>
+      <button class="btn ghost" id="pgDown" data-t="pgDown">下移</button>
+      <button class="btn ghost" id="pgRot" data-t="pgRot">旋转</button>
+      <button class="btn ghost" id="pgDel" data-t="pgDel">删除</button>
+      <button class="btn ghost" id="pgBlank" data-t="pgBlank">插入空白页</button>
+      <button class="btn ghost" id="pgExtract" data-t="pgExtract">提取选中</button>
+      <span class="hint" id="pgInfo"></span>
+    </div>
+    <div id="pgGrid" class="pgrid"></div>
+  </div>
+  <div class="opt" id="opt-invoice">
+    <div class="row"><span class="hint" data-t="invHint">把发票 PDF 或照片拖进来（一页一张发票），识别后把发票号码、日期、销售方、金额、税额提出来，导出成 CSV 给 Excel 用。全程本机，不上传。</span></div>
+    <div class="row">
+      <label for="invLang" data-t="ocrLang">识别语言</label>
+      <select id="invLang">
+        <option value="chi_sim+eng" data-t="ocrLangBoth">中文 + 英文</option>
+        <option value="chi_sim" data-t="ocrLangZh">仅中文</option>
+      </select>
+      <button class="btn ghost" id="invRun" data-t="invRun">开始识别</button>
+      <button class="btn ghost" id="invCsv" disabled data-t="invCsv">导出 CSV</button>
+      <span class="hint" id="invInfo"></span>
+    </div>
+    <div id="invTableWrap" class="invwrap"></div>
+  </div>
   <div class="opt" id="opt-img">
     <div class="row"><span class="hint" data-t="imgHint">每张图一页 A4，等比缩放居中，留 24pt 边距。支持 JPG / PNG。</span></div>
   </div>
@@ -291,13 +332,18 @@ background:transparent;border:1px solid var(--line);color:var(--dim);border-radi
 <script src="./vendor/tesseract/tesseract.min.js"></script>
 <script type="module">
 import { merge, extract, splitEvery, rotate, info, watermark } from "./core.js";
+import { buildModel, move, removeSelected, rotateSelected, insertBlank, exportModel, extractSelected, summary } from "./pages.js";
+import * as pdfjsLib from "./vendor/pdfjs/pdf.min.mjs";
+import { recognizeText } from "./ocr.js";
+import { extractInvoice, toCsv } from "./invoices.js";
+pdfjsLib.GlobalWorkerOptions.workerSrc = "./vendor/pdfjs/pdf.worker.min.mjs";
 import { verify, LICENSE_MAJOR } from "./license.js";
 
 const $ = (s) => document.querySelector(s);
 
 const DICT = {
   zh: {title:"DOUDUO PDF 口袋 · 在线版", sub:"所有处理在本机完成，文件不会离开你的电脑。", merge:"合并", split:"拆分",
-        rotate:"旋转", compress:"压缩", img:"图片转 PDF", tabOcr:"识别文字",
+        rotate:"旋转", compress:"压缩", img:"图片转 PDF", tabOcr:"识别文字", tabPage:"页面", tabInvoice:"发票", invHint:"把发票 PDF 或照片拖进来（一页一张发票），识别后把发票号码、日期、销售方、金额、税额提出来，导出成 CSV 给 Excel 用。全程本机，不上传。", invRun:"开始识别", invCsv:"导出 CSV", invEmpty:"还没有识别结果。拖入发票后点「开始识别」。", invDone:"识别完成：", invWithAmount:"张有金额", cancelled:"已取消", invCols:"文件名,页码,发票号码,开票日期,销售方,价税合计,税额", pageBtn:"导出 PDF", wmBtn:"加水印并下载", ocrBtn:"识别并下载", pgHint:"拖动缩略图改顺序；点缩略图选中，选中后可删除、提取、旋转，也能插入空白页。导出的是新文件，原文件不动。", pgUp:"上移", pgDown:"下移", pgRot:"旋转", pgDel:"删除", pgBlank:"插入空白页", pgExtract:"提取选中", pgNeedFile:"先把 PDF 拖进来，或者从最近文件里选一个", pgNeedSel:"先在缩略图上点选几页", pgBlankPage:"空白页", tagPage:"整理",
         ocrHint:"拍照、扫描、或别人发来的图片版 PDF，里面的字其实是一张张图片：选不中、搜不到、也复制不出来。识别一遍之后，页面看着完全没变，但字可以选中、搜索和复制了。", ocrWhen:"适合：扫描的合同、拍照的发票、别处下载的图片版资料。", ocrLang:"识别语言", ocrLangBoth:"中文 + 英文", ocrLangZh:"仅中文", ocrLangEn:"仅英文", ocrSpeed:"约 2–4 秒 / 页，文件不上传。", cancel:"取消", ocrNotScanned:"这份 PDF 本来就能搜索，识别完不会有变化。可以直接用其他功能。", ocrDone:"好了，现在能搜到 {n} 个字。按 Ctrl+F 试一下。", ocrSkipped:"（另有 {n} 页本来就能搜，已跳过）", tagOcr:"可搜索", drop:"把 PDF 或图片拖进来，或点这里选择",
         dropSub:"支持多选 · 不上传 · 断网也能用 · ", demo:"用样例文件试试", noFiles:"还没有文件 · 拖进来或点「选择 PDF」", again:"继续处理", dlAgain:"再下载一次", outLabel:"输出文件名", outPh:"合并.pdf", tagMerge:"合并", tagCompress:"压缩", tagExtract:"抽取", tagRotate:"旋转", tagWm:"水印", tagImg:"图片转PDF", outMore:"等{0}个", recentTitle:"最近处理", recentClear:"清空", recentEmpty:"", keysTitle:"快捷键", close:"关闭", k1:"打开文件", k2:"撤销删除/继续处理", k3:"关闭弹窗", k4:"开始处理", k5:"查看快捷键", newVersion:"有新版本，点这里刷新", again:"继续处理", dlAgain:"再下载一次", outLabel:"输出文件名", outPh:"合并.pdf", tagMerge:"合并", tagCompress:"压缩", tagExtract:"抽取", tagRotate:"旋转", tagWm:"水印", tagInvoice:"发票拼版", tagImg:"图片转PDF", outMore:"等{0}个", recentTitle:"最近处理", recentClear:"清空", recentEmpty:"", keysTitle:"快捷键", close:"关闭", k1:"打开文件", k2:"撤销删除/继续处理", k3:"关闭弹窗", k4:"开始处理", k5:"查看快捷键", meta:"{0} · {1}", newVersion:"有新版本，点这里刷新", run:"开始处理",
         tipA:"全部功能免费 · ", tipB:"不限文件数与页数", langLabel:"界面语言", working:"处理中…", tabWm:"水印", wmHint:"给 PDF 叠一层斜向文字水印，可当草稿/内部资料标记。文字可选中、可搜索。", splitEvery:"每 N 页切一份", splitRange:"只取这些页", rotAll:"整份", rotRange:"只转这几页", deg90:"顺时针 90°", deg270:"顺时针 270°", lvLight:"轻（2200px）", lvNormal:"标准（1600px）", lvStrong:"强（1100px）", themeToDark:"切到深色", themeToLight:"切到浅色",
@@ -311,7 +357,7 @@ const DICT = {
         pwaHint:"装到桌面，下次点图标直接打开", pwaInstall:"安装到桌面", pwaDone:"已安装，桌面见", folder:"合并整个文件夹…", folderPick:"选一个文件夹，把里面所有 PDF 按文件名顺序合成一个", folderNone:"这个文件夹里没有 PDF", demoName:"样例.pdf", folderDone:"已加入 {0} 个 PDF", folderNoSupport:"这个浏览器不支持选文件夹，请用「选择 PDF」多选", pwaManual:"没有安装入口？用地址栏右侧的安装图标",
         wmLabel:"加水印", wmPh:"内部资料", wmDefault:"内部资料", close:"关闭", licExpired:"这个码已过期",},
   en: {title:"DOUDUO PDF Pocket · Web", sub:"Everything runs on your machine. Your files never leave your computer.", merge:"Merge",
-        split:"Split", rotate:"Rotate", compress:"Compress", img:"Images to PDF", tabOcr:"Recognize text", ocrHint:"In a scanned or photographed PDF the words are just pictures: you cannot select, search or copy them. After recognition the page looks exactly the same, but the words become selectable and searchable.", ocrWhen:"Good for: scanned contracts, photographed invoices, image-only PDFs from elsewhere.", ocrLang:"Language", ocrLangBoth:"Chinese + English", ocrLangZh:"Chinese only", ocrLangEn:"English only", ocrSpeed:"About 2–4 s per page. Your file is never uploaded.", cancel:"Cancel", ocrNotScanned:"This PDF is already searchable — recognition will not change it.", ocrDone:"Done. {n} characters are searchable now — try Ctrl+F.", ocrSkipped:" ({n} pages were already searchable)", tagOcr:"searchable", drop:"Drop PDFs or images here, or click to choose",
+        split:"Split", rotate:"Rotate", compress:"Compress", img:"Images to PDF", tabOcr:"Recognize text", tabPage:"Pages", tabInvoice:"Invoices", invHint:"Drop invoice PDFs or photos (one invoice per page). It pulls out invoice number, date, seller, total and tax, then exports CSV for Excel. Everything stays on your machine.", invRun:"Recognize", invCsv:"Export CSV", invEmpty:"No results yet. Drop invoices and hit Recognize.", invDone:"Done:", invWithAmount:"with an amount", cancelled:"Cancelled", invCols:"File,Page,Invoice no.,Date,Seller,Total,Tax", pageBtn:"Export PDF", wmBtn:"Watermark & download", ocrBtn:"Recognize & download", pgHint:"Drag thumbnails to reorder; click to select, then delete, extract, rotate or insert a blank page. The export is a new file; your original is untouched.", pgUp:"Move up", pgDown:"Move down", pgRot:"Rotate", pgDel:"Delete", pgBlank:"Insert blank", pgExtract:"Extract selected", pgNeedFile:"Drop a PDF first, or pick one from Recent", pgNeedSel:"Click a few thumbnails first", pgBlankPage:"Blank", tagPage:"pages", ocrHint:"In a scanned or photographed PDF the words are just pictures: you cannot select, search or copy them. After recognition the page looks exactly the same, but the words become selectable and searchable.", ocrWhen:"Good for: scanned contracts, photographed invoices, image-only PDFs from elsewhere.", ocrLang:"Language", ocrLangBoth:"Chinese + English", ocrLangZh:"Chinese only", ocrLangEn:"English only", ocrSpeed:"About 2–4 s per page. Your file is never uploaded.", cancel:"Cancel", ocrNotScanned:"This PDF is already searchable — recognition will not change it.", ocrDone:"Done. {n} characters are searchable now — try Ctrl+F.", ocrSkipped:" ({n} pages were already searchable)", tagOcr:"searchable", drop:"Drop PDFs or images here, or click to choose",
         dropSub:"Multiple files · no upload · works offline · ", demo:"try a sample file", noFiles:"No files yet — drop files or click Choose PDFs", again:"Process more", dlAgain:"Download again", outLabel:"Output file name", outPh:"merged.pdf", tagMerge:"merged", tagCompress:"compressed", tagExtract:"extracted", tagRotate:"rotated", tagWm:"watermarked", tagImg:"images", outMore:"+{0}", recentTitle:"Recent", recentClear:"Clear", keysTitle:"Keyboard shortcuts", close:"Close", k1:"Open files", k2:"Undo delete / keep processing", k3:"Close dialog", k4:"Run", k5:"Show shortcuts", newVersion:"Update ready — refresh", again:"Process more", dlAgain:"Download again", outLabel:"Output file name", outPh:"merged.pdf", tagMerge:"merged", tagCompress:"compressed", tagExtract:"extracted", tagRotate:"rotated", tagWm:"watermarked", tagImg:"images", outMore:"+{0}", recentTitle:"Recent", recentClear:"Clear", keysTitle:"Keyboard shortcuts", close:"Close", k1:"Open files", k2:"Undo delete / keep processing", k3:"Close dialog", k4:"Run", k5:"Show shortcuts", meta:"{0} · {1}", newVersion:"Update ready — refresh", run:"Run",
         tipA:"Split, rotate and watermark, all free · ", tipB:"activate from the button above", langLabel:"Interface language", working:"Working…", splitEvery:"Every N pages", splitRange:"Only these pages", rotAll:"All pages", rotRange:"Only these pages", deg90:"90° clockwise", deg270:"270° clockwise", lvLight:"Light (2200px)", lvNormal:"Standard (1600px)", lvStrong:"Strong (1100px)", tabWm:"Watermark", wmHint:"Stamps a diagonal text watermark on every page — for drafts or internal notes. The text stays selectable and searchable.", themeToDark:"Switch to dark", themeToLight:"Switch to light",
         merged:"Merge & download", splitBtn:"Split & download", rotBtn:"Rotate & download", compBtn:"Compress & download", imgBtn:"Convert to PDF",
@@ -487,6 +533,8 @@ $("#tabs").addEventListener("click", (e) => {
   document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("on", t === b));
   document.querySelectorAll(".opt").forEach((o) => o.classList.toggle("on", o.id === "opt-" + state.mode));
 paint();
+  if (state.mode === "page") renderPages();
+  if (state.mode === "invoice") renderInvTable();
 });
 
 // 演示文件：只注册一次
@@ -581,7 +629,7 @@ function paint() {
     : T("noFiles");
   ensureOutName();
   $("#runBtn").disabled = !state.files.length;
-  $("#runBtn").textContent = { merge: T("merged"), split: T("splitBtn"), rotate: T("rotBtn"), compress: T("compBtn"), img: T("imgBtn") }[state.mode] || T("merged");
+  $("#runBtn").textContent = { merge: T("merged"), split: T("splitBtn"), rotate: T("rotBtn"), compress: T("compBtn"), img: T("imgBtn"), wm: T("wmBtn"), ocr: T("ocrBtn"), page: T("pageBtn"), invoice: T("invRun") }[state.mode] || T("merged");
 }
 
 let DL = { bytes: null, name: "" };
@@ -679,6 +727,167 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") document.querySelectorAll(".modal").forEach((m) => (m.hidden = true));
 });
 
+
+// ---------------- 页面管理 ----------------
+let PG = null;          // { src, model }
+let PGsel = new Set();  // 选中的页下标
+
+async function renderPages() {
+  const grid = $("#pgGrid"), infoEl = $("#pgInfo");
+  if (!state.files.length) {
+    grid.innerHTML = `<div class="hint" style="padding:18px">${T("pgNeedFile")}</div>`;
+    infoEl.textContent = "";
+    return;
+  }
+  const f = state.files[0];
+  if (!PG || PG.src !== f.buf) {
+    PG = { src: f.buf, model: await buildModel(f.buf) };
+    PGsel = new Set();
+  }
+  if (!PG.pdf) PG.pdf = await pdfjsLib.getDocument({ data: f.buf.slice(0) }).promise;
+  grid.innerHTML = "";
+  for (let i = 0; i < PG.model.pages.length; i++) {
+    const it = PG.model.pages[i];
+    const card = document.createElement("div");
+    card.className = "pcard" + (PGsel.has(i) ? " sel" : "");
+    card.draggable = true;
+    card.dataset.i = String(i);
+    if (it.blank) {
+      const d = document.createElement("div");
+      d.className = "pthumb blank";
+      d.textContent = T("pgBlankPage");
+      card.appendChild(d);
+    } else {
+      const page = await PG.pdf.getPage(it.src + 1);
+      const vp = page.getViewport({ scale: 0.2 });
+      const c = document.createElement("canvas");
+      c.width = Math.ceil(vp.width); c.height = Math.ceil(vp.height);
+      await page.render({ canvasContext: c.getContext("2d"), viewport: vp }).promise;
+      card.appendChild(c);
+    }
+    const n = document.createElement("div");
+    n.className = "pnum";
+    n.textContent = String(i + 1) + (it.rot ? ` · ${it.rot}°` : "");
+    card.appendChild(n);
+    card.onclick = () => {
+      if (PGsel.has(i)) PGsel.delete(i); else PGsel.add(i);
+      card.classList.toggle("sel");
+      paintPgInfo();
+    };
+    card.ondragstart = (e) => { e.dataTransfer.setData("text/plain", String(i)); };
+    grid.appendChild(card);
+  }
+  grid.ondragover = (e) => e.preventDefault();
+  grid.ondrop = (e) => {
+    e.preventDefault();
+    const from = parseInt(e.dataTransfer.getData("text/plain"), 10);
+    const target = e.target.closest(".pcard");
+    const to = target ? parseInt(target.dataset.i, 10) : PG.model.pages.length - 1;
+    if (isNaN(from) || isNaN(to) || from === to) return;
+    const [item] = PG.model.pages.splice(from, 1);
+    PG.model.pages.splice(to, 0, item);
+    PGsel.clear();
+    renderPages();
+  };
+  paintPgInfo();
+}
+
+function paintPgInfo() {
+  if (!PG) return;
+  const s2 = summary(PG.model);
+  const el = $("#pgInfo");
+  if (el) el.textContent = `${s2.total} 页` + (s2.blanks ? ` · 含 ${s2.blanks} 张空白页` : "") + (PGsel.size ? ` · 已选 ${PGsel.size}` : "");
+}
+
+function pgGuard() {
+  if (!PG || !PG.model.pages.length) { toast(T("pgNeedFile")); return false; }
+  if (!PGsel.size) { toast(T("pgNeedSel")); return false; }
+  return true;
+}
+
+$("#pgRot").onclick = () => { if (!pgGuard()) return; rotateSelected(PG.model, PGsel, 90); renderPages(); };
+$("#pgDel").onclick = () => { if (!pgGuard()) return; removeSelected(PG.model, PGsel); PGsel.clear(); renderPages(); };
+$("#pgBlank").onclick = () => {
+  if (!PG) { toast(T("pgNeedFile")); return; }
+  const at = PGsel.size ? Math.max(...PGsel) + 1 : PG.model.pages.length;
+  insertBlank(PG.model, at); PGsel.clear(); renderPages();
+};
+$("#pgUp").onclick = () => { if (!pgGuard()) return; const i = Math.min(...PGsel); move(PG.model, i, -1); PGsel = new Set([Math.max(0, i - 1)]); renderPages(); };
+$("#pgDown").onclick = () => { if (!pgGuard()) return; const i = Math.max(...PGsel); move(PG.model, i, 1); PGsel = new Set([Math.min(PG.model.pages.length - 1, i + 1)]); renderPages(); };
+$("#pgExtract").onclick = async () => {
+  if (!pgGuard()) return;
+  const f = state.files[0];
+  try {
+    const bytes = await extractSelected(f.buf, PG.model, PGsel);
+    download(bytes, autoOutName(T("tagPage")));
+    doneToast(autoOutName(T("tagPage")), bytes.byteLength, performance.now());
+  } catch (e) { toast(T("fail") + (e.message || e)); }
+};
+
+
+// ---------------- 发票识别 ----------------
+let INV_ROWS = [];
+
+function renderInvTable() {
+  const wrap = $("#invTableWrap");
+  $("#invCsv").disabled = !INV_ROWS.length;
+  if (!INV_ROWS.length) {
+    wrap.innerHTML = `<div class="hint" style="padding:16px">${T("invEmpty")}</div>`;
+    return;
+  }
+  const cell = (v, cls) => `<td class="${cls || ""}">${String(v == null ? "" : v).replace(/[<>&]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]))}</td>`;
+  const head = T("invCols").split(",").map((h) => `<th>${h}</th>`).join("");
+  const body = INV_ROWS.map((r) => "<tr>"
+    + cell(r.file) + cell(r.page, "num") + cell(r.no) + cell(r.code) + cell(r.date)
+    + cell(r.seller) + cell(r.total, "num") + cell(r.tax, "num") + "</tr>").join("");
+  wrap.innerHTML = `<table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
+}
+
+$("#invRun").onclick = async () => {
+  if (!state.files.length) { toast(T("pgNeedFile")); return; }
+  const btn = $("#invRun");
+  btn.disabled = true;
+  const old = btn.textContent;
+  btn.textContent = T("working");
+  INV_ROWS = [];
+  renderInvTable();
+  try {
+    let done = 0;
+    const totalPages = state.files.reduce((k, f) => k + (f.pages || 1), 0);
+    for (const f of state.files) {
+      const texts = await recognizeText(f.buf, {
+        langs: $("#invLang").value,
+        onProgress: (n, p) => { progSet(done + n, totalPages, T("unitPages") || "页"); },
+      });
+      texts.forEach((tx, i) => {
+        const r = extractInvoice(tx);
+        INV_ROWS.push({ file: f.name, page: i + 1, ...r });
+      });
+      done += texts.length;
+    }
+    renderInvTable();
+    const hit = INV_ROWS.filter((r) => r.total).length;
+    toast(`${T("invDone")} ${INV_ROWS.length} ${T("pgPagesWord") || "页"} · ${hit} ${T("invWithAmount") || "张有金额"}`);
+  } catch (e) {
+    toast(e && String(e.message) === "ocr-cancelled" ? T("cancelled") : T("fail") + (e.message || e));
+  } finally {
+    btn.disabled = false;
+    btn.textContent = old;
+    progEnd();
+  }
+};
+
+$("#invCsv").onclick = () => {
+  if (!INV_ROWS.length) return;
+  const csv = toCsv(INV_ROWS);
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "发票清单-" + new Date().toISOString().slice(0, 10) + ".csv";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+};
+
 $("#runBtn").addEventListener("click", async () => {
   const btn = $("#runBtn"); btn.disabled = true; const old = btn.textContent; btn.textContent = T("working");
   progStart(T("working"));
@@ -696,6 +905,13 @@ $("#runBtn").addEventListener("click", async () => {
       };
       const outM = (document.querySelector("#outName").value || "").trim() || autoOutName(T("tagMerge"));
       download(await merge(buffers, opts, (d, t2) => progSet(d, t2, T("unitFiles"))), outM.endsWith(".pdf") ? outM : outM + ".pdf");
+    } else if (state.mode === "page") {
+      if (!PG || !PG.model.pages.length) { toast(T("pgNeedFile")); return; }
+      const t0 = performance.now();
+      const bytes = await exportModel(state.files[0].buf, PG.model);
+      const nm = autoOutName(T("tagPage"));
+      download(bytes, nm);
+      doneToast(nm, bytes.byteLength, t0);
     } else if (state.mode === "split") {
       const mode = document.querySelector('input[name="sm"]:checked').value;
       if (mode === "range") download(await extract(state.files[0].buf, $("#splitRange").value.trim()), autoOutName(T("tagExtract")));
