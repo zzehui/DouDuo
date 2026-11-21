@@ -16,7 +16,7 @@ const $ = (s) => document.querySelector(s);
 
 const DICT = {
   zh: {title:"DOUDUO PDF 口袋 · 在线版", sub:"所有处理在本机完成，文件不会离开你的电脑。", merge:"合并", split:"拆分",
-        rotate:"旋转", compress:"压缩", img:"图片转 PDF", tabOcr:"识别文字", tabPage:"页面", tabInvoice:"发票", invHint:"把发票 PDF 或照片拖进来（一页一张发票），识别后把发票号码、日期、销售方、金额、税额提出来，导出成 CSV 给 Excel 用。全程本机，不上传。", invRun:"开始识别", invCsv:"导出 CSV", invEmpty:"还没有识别结果。拖入发票后点「开始识别」。", invDone:"识别完成：", invWithAmount:"张有金额", cancelled:"已取消", invCols:"文件名,页码,发票号码,开票日期,销售方,价税合计,税额", pageBtn:"导出 PDF", wmBtn:"加水印并下载", ocrBtn:"识别并下载", pgHint:"拖动缩略图改顺序；点缩略图选中，选中后可删除、提取、旋转，也能插入空白页。导出的是新文件，原文件不动。", pgUp:"上移", pgDown:"下移", pgRot:"旋转", pgDel:"删除", pgBlank:"插入空白页", pgExtract:"提取选中", pgNeedFile:"先把 PDF 拖进来，或者从最近文件里选一个", pgNeedSel:"先在缩略图上点选几页", pgBlankPage:"空白页", tagPage:"整理",
+        rotate:"旋转", compress:"压缩", img:"图片转 PDF", tabOcr:"识别文字", tabPage:"页面", tabInvoice:"发票", invHint:"把发票 PDF 或照片拖进来（一页一张发票），识别后把发票号码、日期、销售方、金额、税额提出来，导出成 CSV 给 Excel 用。全程本机，不上传。", invRun:"开始识别", invCsv:"导出 CSV", invEmpty:"还没有识别结果。拖入发票后点「开始识别」。", invDone:"识别完成：", invWithAmount:"张有金额", cancelled:"已取消", invCols:"文件名,页码,发票号码,开票日期,销售方,价税合计,税额", pageBtn:"导出 PDF", wmBtn:"加水印并下载", ocrBtn:"识别并下载", pgHint:"拖动缩略图改顺序；点缩略图选中，选中后可删除、提取、旋转，也能插入空白页。还能一键找出空白页（扫描件常见）。导出的是新文件，原文件不动。", pgUp:"上移", pgDown:"下移", pgRot:"旋转", pgDel:"删除", pgBlank:"插入空白页", pgScanBlank:"找出空白页", pgScanning:"正在检查 {i}/{n} 页…", pgBlankFound:"找到 {n} 张空白页，已选中；确认后点「删除」", pgBlankNone:"没找到空白页", pgExtract:"提取选中", pgNeedFile:"先把 PDF 拖进来，或者从最近文件里选一个", pgNeedSel:"先在缩略图上点选几页", pgBlankPage:"空白页", tagPage:"整理",
         ocrHint:"拍照、扫描、或别人发来的图片版 PDF，里面的字其实是一张张图片：选不中、搜不到、也复制不出来。识别一遍之后，页面看着完全没变，但字可以选中、搜索和复制了。", ocrWhen:"适合：扫描的合同、拍照的发票、别处下载的图片版资料。", ocrLang:"识别语言", ocrLangBoth:"中文 + 英文", ocrLangZh:"仅中文", ocrLangEn:"仅英文", ocrSpeed:"约 2–4 秒 / 页，文件不上传。", cancel:"取消", ocrNotScanned:"这份 PDF 本来就能搜索，识别完不会有变化。可以直接用其他功能。", ocrDone:"好了，现在能搜到 {n} 个字。按 Ctrl+F 试一下。", ocrSkipped:"（另有 {n} 页本来就能搜，已跳过）", tagOcr:"可搜索", drop:"把 PDF 或图片拖进来，或点这里选择",
         dropSub:"支持多选 · 不上传 · 断网也能用 · ", demo:"用样例文件试试", noFiles:"还没有文件 · 拖进来或点「选择 PDF」", again:"继续处理", dlAgain:"再下载一次", outLabel:"输出文件名", outPh:"合并.pdf", tagMerge:"合并", tagCompress:"压缩", tagExtract:"抽取", tagRotate:"旋转", tagWm:"水印", tagImg:"图片转PDF", outMore:"等{0}个", recentTitle:"最近处理", recentClear:"清空", recentEmpty:"", keysTitle:"快捷键", close:"关闭", k1:"打开文件", k2:"撤销删除/继续处理", k3:"关闭弹窗", k4:"开始处理", k5:"查看快捷键", newVersion:"有新版本，点这里刷新", again:"继续处理", dlAgain:"再下载一次", outLabel:"输出文件名", outPh:"合并.pdf", tagMerge:"合并", tagCompress:"压缩", tagExtract:"抽取", tagRotate:"旋转", tagWm:"水印", tagInvoice:"发票拼版", tagImg:"图片转PDF", outMore:"等{0}个", recentTitle:"最近处理", recentClear:"清空", recentEmpty:"", keysTitle:"快捷键", close:"关闭", k1:"打开文件", k2:"撤销删除/继续处理", k3:"关闭弹窗", k4:"开始处理", k5:"查看快捷键", meta:"{0} · {1}", newVersion:"有新版本，点这里刷新", run:"开始处理",
         tipA:"全部功能免费 · ", tipB:"不限文件数与页数", langLabel:"界面语言", working:"处理中…", tabWm:"水印", wmHint:"给 PDF 叠一层斜向文字水印，可当草稿/内部资料标记。文字可选中、可搜索。", splitEvery:"每 N 页切一份", splitRange:"只取这些页", rotAll:"整份", rotRange:"只转这几页", deg90:"顺时针 90°", deg270:"顺时针 270°", lvLight:"轻（2200px）", lvNormal:"标准（1600px）", lvStrong:"强（1100px）", themeToDark:"切到深色", themeToLight:"切到浅色",
@@ -30,7 +30,7 @@ const DICT = {
         pwaHint:"装到桌面，下次点图标直接打开", pwaInstall:"安装到桌面", pwaDone:"已安装，桌面见", folder:"合并整个文件夹…", folderPick:"选一个文件夹，把里面所有 PDF 按文件名顺序合成一个", folderNone:"这个文件夹里没有 PDF", demoName:"样例.pdf", folderDone:"已加入 {0} 个 PDF", folderNoSupport:"这个浏览器不支持选文件夹，请用「选择 PDF」多选", pwaManual:"没有安装入口？用地址栏右侧的安装图标",
         wmLabel:"加水印", wmPh:"内部资料", wmDefault:"内部资料", close:"关闭", licExpired:"这个码已过期",},
   en: {title:"DOUDUO PDF Pocket · Web", sub:"Everything runs on your machine. Your files never leave your computer.", merge:"Merge",
-        split:"Split", rotate:"Rotate", compress:"Compress", img:"Images to PDF", tabOcr:"Recognize text", tabPage:"Pages", tabInvoice:"Invoices", invHint:"Drop invoice PDFs or photos (one invoice per page). It pulls out invoice number, date, seller, total and tax, then exports CSV for Excel. Everything stays on your machine.", invRun:"Recognize", invCsv:"Export CSV", invEmpty:"No results yet. Drop invoices and hit Recognize.", invDone:"Done:", invWithAmount:"with an amount", cancelled:"Cancelled", invCols:"File,Page,Invoice no.,Date,Seller,Total,Tax", pageBtn:"Export PDF", wmBtn:"Watermark & download", ocrBtn:"Recognize & download", pgHint:"Drag thumbnails to reorder; click to select, then delete, extract, rotate or insert a blank page. The export is a new file; your original is untouched.", pgUp:"Move up", pgDown:"Move down", pgRot:"Rotate", pgDel:"Delete", pgBlank:"Insert blank", pgExtract:"Extract selected", pgNeedFile:"Drop a PDF first, or pick one from Recent", pgNeedSel:"Click a few thumbnails first", pgBlankPage:"Blank", tagPage:"pages", ocrHint:"In a scanned or photographed PDF the words are just pictures: you cannot select, search or copy them. After recognition the page looks exactly the same, but the words become selectable and searchable.", ocrWhen:"Good for: scanned contracts, photographed invoices, image-only PDFs from elsewhere.", ocrLang:"Language", ocrLangBoth:"Chinese + English", ocrLangZh:"Chinese only", ocrLangEn:"English only", ocrSpeed:"About 2–4 s per page. Your file is never uploaded.", cancel:"Cancel", ocrNotScanned:"This PDF is already searchable — recognition will not change it.", ocrDone:"Done. {n} characters are searchable now — try Ctrl+F.", ocrSkipped:" ({n} pages were already searchable)", tagOcr:"searchable", drop:"Drop PDFs or images here, or click to choose",
+        split:"Split", rotate:"Rotate", compress:"Compress", img:"Images to PDF", tabOcr:"Recognize text", tabPage:"Pages", tabInvoice:"Invoices", invHint:"Drop invoice PDFs or photos (one invoice per page). It pulls out invoice number, date, seller, total and tax, then exports CSV for Excel. Everything stays on your machine.", invRun:"Recognize", invCsv:"Export CSV", invEmpty:"No results yet. Drop invoices and hit Recognize.", invDone:"Done:", invWithAmount:"with an amount", cancelled:"Cancelled", invCols:"File,Page,Invoice no.,Date,Seller,Total,Tax", pageBtn:"Export PDF", wmBtn:"Watermark & download", ocrBtn:"Recognize & download", pgHint:"Drag thumbnails to reorder; click to select, then delete, extract, rotate or insert a blank page. You can also find blank pages automatically (common in scans). The export is a new file; your original is untouched.", pgUp:"Move up", pgDown:"Move down", pgRot:"Rotate", pgDel:"Delete", pgBlank:"Insert blank", pgScanBlank:"Find blank pages", pgScanning:"Checking {i}/{n}…", pgBlankFound:"Found {n} blank page(s), selected — click Delete to remove", pgBlankNone:"No blank pages found", pgExtract:"Extract selected", pgNeedFile:"Drop a PDF first, or pick one from Recent", pgNeedSel:"Click a few thumbnails first", pgBlankPage:"Blank", tagPage:"pages", ocrHint:"In a scanned or photographed PDF the words are just pictures: you cannot select, search or copy them. After recognition the page looks exactly the same, but the words become selectable and searchable.", ocrWhen:"Good for: scanned contracts, photographed invoices, image-only PDFs from elsewhere.", ocrLang:"Language", ocrLangBoth:"Chinese + English", ocrLangZh:"Chinese only", ocrLangEn:"English only", ocrSpeed:"About 2–4 s per page. Your file is never uploaded.", cancel:"Cancel", ocrNotScanned:"This PDF is already searchable — recognition will not change it.", ocrDone:"Done. {n} characters are searchable now — try Ctrl+F.", ocrSkipped:" ({n} pages were already searchable)", tagOcr:"searchable", drop:"Drop PDFs or images here, or click to choose",
         dropSub:"Multiple files · no upload · works offline · ", demo:"try a sample file", noFiles:"No files yet — drop files or click Choose PDFs", again:"Process more", dlAgain:"Download again", outLabel:"Output file name", outPh:"merged.pdf", tagMerge:"merged", tagCompress:"compressed", tagExtract:"extracted", tagRotate:"rotated", tagWm:"watermarked", tagImg:"images", outMore:"+{0}", recentTitle:"Recent", recentClear:"Clear", keysTitle:"Keyboard shortcuts", close:"Close", k1:"Open files", k2:"Undo delete / keep processing", k3:"Close dialog", k4:"Run", k5:"Show shortcuts", newVersion:"Update ready — refresh", again:"Process more", dlAgain:"Download again", outLabel:"Output file name", outPh:"merged.pdf", tagMerge:"merged", tagCompress:"compressed", tagExtract:"extracted", tagRotate:"rotated", tagWm:"watermarked", tagImg:"images", outMore:"+{0}", recentTitle:"Recent", recentClear:"Clear", keysTitle:"Keyboard shortcuts", close:"Close", k1:"Open files", k2:"Undo delete / keep processing", k3:"Close dialog", k4:"Run", k5:"Show shortcuts", meta:"{0} · {1}", newVersion:"Update ready — refresh", run:"Run",
         tipA:"Split, rotate and watermark, all free · ", tipB:"activate from the button above", langLabel:"Interface language", working:"Working…", splitEvery:"Every N pages", splitRange:"Only these pages", rotAll:"All pages", rotRange:"Only these pages", deg90:"90° clockwise", deg270:"270° clockwise", lvLight:"Light (2200px)", lvNormal:"Standard (1600px)", lvStrong:"Strong (1100px)", tabWm:"Watermark", wmHint:"Stamps a diagonal text watermark on every page — for drafts or internal notes. The text stays selectable and searchable.", themeToDark:"Switch to dark", themeToLight:"Switch to light",
         merged:"Merge & download", splitBtn:"Split & download", rotBtn:"Rotate & download", compBtn:"Compress & download", imgBtn:"Convert to PDF",
@@ -487,6 +487,48 @@ $("#pgBlank").onclick = () => {
 };
 $("#pgUp").onclick = () => { if (!pgGuard()) return; const i = Math.min(...PGsel); move(PG.model, i, -1); PGsel = new Set([Math.max(0, i - 1)]); renderPages(); };
 $("#pgDown").onclick = () => { if (!pgGuard()) return; const i = Math.max(...PGsel); move(PG.model, i, 1); PGsel = new Set([Math.min(PG.model.pages.length - 1, i + 1)]); renderPages(); };
+$("#pgScanBlank").onclick = async () => {
+  if (!PG || !PG.model.pages.length) { toast(T("pgNeedFile")); return; }
+  const f = state.files[0];
+  const lib = await getPdfjsLib();
+  const pdf = await lib.getDocument({ data: f.buf.slice(0) }).promise;
+  const found = [];
+  for (let i = 1; i <= pdf.numPages; i++) {
+    $("#pgInfo").textContent = T("pgScanning").replace("{i}", i).replace("{n}", pdf.numPages);
+    if (i % 5 === 0) await new Promise((r) => setTimeout(r, 0));
+    const page = await pdf.getPage(i);
+    const tc = await page.getTextContent();
+    const chars = tc.items.reduce((n, it) => n + String(it.str || "").replace(/\s/g, "").length, 0);
+    let white = true;
+    if (chars < 2) {
+      // 0.2 倍渲染后抽样：整页几乎全白才算空白（避免把纯图片页当空白）
+      const vp = page.getViewport({ scale: 0.2 });
+      const cv = document.createElement("canvas");
+      cv.width = Math.max(1, Math.floor(vp.width));
+      cv.height = Math.max(1, Math.floor(vp.height));
+      const cx = cv.getContext("2d");
+      cx.fillStyle = "#ffffff";            // pdf.js 不铺背景，先铺白，否则整页被当成黑色
+      cx.fillRect(0, 0, cv.width, cv.height);
+      await page.render({ canvasContext: cx, viewport: vp }).promise;
+      const d = cx.getImageData(0, 0, cv.width, cv.height).data;
+      let light = 0, total = 0;
+      for (let k = 0; k < d.length; k += 16) {
+        const lum = 0.299 * d[k] + 0.587 * d[k + 1] + 0.114 * d[k + 2];
+        if (lum > 244) light++;
+        total++;
+      }
+      white = light / total > 0.995;
+    } else {
+      white = false;
+    }
+    if (white) found.push(i - 1);
+  }
+  if (!found.length) { toast(T("pgBlankNone")); renderPages(); return; }
+  PGsel = new Set(found);
+  renderPages();
+  toast(T("pgBlankFound").replace("{n}", found.length));
+};
+
 $("#pgExtract").onclick = async () => {
   if (!pgGuard()) return;
   const f = state.files[0];
