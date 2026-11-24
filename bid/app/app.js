@@ -53,6 +53,29 @@ function download(bytes, name) {
   setTimeout(() => URL.revokeObjectURL(a.href), 4000);
 }
 
+
+/* ---------- 中文字体（带缓存与超时） ---------- */
+const FONT_URL = "./vendor/font/NotoSansSC-sub.otf";
+async function loadCjkFont() {
+  try {
+    const cache = await caches.open("bidbook-font-v1");
+    let res = await cache.match(FONT_URL);
+    if (!res) {
+      setStatus("首次导出：正在加载中文字体（1.8MB）…");
+      const ctl = new AbortController();
+      const timer = setTimeout(() => ctl.abort(), 60000);
+      res = await fetch(FONT_URL, { signal: ctl.signal });
+      clearTimeout(timer);
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      await cache.put(FONT_URL, res.clone());
+    }
+    return new Uint8Array(await res.arrayBuffer());
+  } catch (e) {
+    console.warn("font load failed", e);
+    return null;
+  }
+}
+
 /* ---------- 文件加载 ---------- */
 async function readFile(f) {
   const buf = new Uint8Array(await f.arrayBuffer());
@@ -259,11 +282,17 @@ async function exportBook() {
 
     let fontObj = null;
     let fontBytes = null;
+    let fmtFinal = fmt;
     if (needCJK) {
-      setStatus("加载中文字体…");
-      const r = await fetch("./vendor/font/NotoSansSC-Regular.otf");
-      fontBytes = new Uint8Array(await r.arrayBuffer());
-      fontObj = await fontFor(doc, { cjk: true, bytes: fontBytes });
+      fontBytes = await loadCjkFont();
+      if (fontBytes) {
+        setStatus("嵌入中文字体…");
+        fontObj = await fontFor(doc, { cjk: true, bytes: fontBytes });
+      } else {
+        fmtFinal = CJK.test(title) || chapters.some((c) => CJK.test(c.title)) ? "zh" : fmt;
+        if (fmtFinal === "zh" || fmtFinal === "zhTotal") fmtFinal = "n";
+        toast("中文字体没加载下来，先用数字页码；网络恢复后重试即可", 5200);
+      }
     }
 
     let tocPages = 0;
@@ -271,8 +300,8 @@ async function exportBook() {
       setStatus("插入目录页…");
       const res = await insertToc(doc, chapters, {
         tocAt: Math.max(0, +$("#tocAt").value || 0),
-        title,
-        cjk: needCJK,
+        title: fontObj ? title : "CONTENTS",
+        cjk: !!fontObj,
         fontBytes,
         fontObj,
       });
@@ -281,7 +310,7 @@ async function exportBook() {
 
     setStatus("加页码…");
     await addPageNumbers(doc, {
-      format: fmt,
+      format: fmtFinal,
       size: SIZES[$("#pnSize").value] || 10.5,
       pos: $("#pnPos").value,
       startAt: Math.max(1, +$("#pnStart").value || 1),
@@ -316,7 +345,8 @@ async function exportBook() {
 async function stampWatermark(bytes, text, opacity) {
   const lib = await import("./pdf-lib.esm.min.js");
   const doc = await lib.PDFDocument.load(bytes, { ignoreEncryption: true });
-  const fontBytes = new Uint8Array(await (await fetch("./vendor/font/NotoSansSC-Regular.otf")).arrayBuffer());
+  const fontBytes = await loadCjkFont();
+  if (!fontBytes) throw new Error("水印需要中文字体，加载失败");
   const font = await fontFor(doc, { cjk: true, bytes: fontBytes });
   const size = 42;
   for (const page of doc.getPages()) {
