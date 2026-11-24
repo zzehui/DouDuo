@@ -3,6 +3,7 @@
 import { merge } from "./core.js";
 import { makeSearchable } from "./ocr.js";
 import { addPageNumbers, insertToc, setOutline, fontFor, PAGE_TEMPLATES, SIZES, cm } from "./bind.js";
+import { buildTerms, scanText, inspect } from "./check.js";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -329,13 +330,21 @@ async function exportBook() {
       setOutline(doc, [...state.chapters].sort((a, b) => a.page - b.page), { offset: tocPages });
     }
 
-    doc.setTitle("豆多成册导出");
-    doc.setProducer("DOUDUO BidBook");
+    if ($("#stripMeta").checked) {
+      doc.setAuthor(""); doc.setTitle(""); doc.setSubject(""); doc.setKeywords([]);
+      doc.setCreator(""); doc.setProducer("");
+    }
     setStatus("保存…");
     const out = await doc.save();
     const d = new Date();
     const stamp = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
-    download(out, `成册-${stamp}.pdf`);
+    if ($("#twoCopies").checked) {
+      download(out, `成册-${stamp}-正本.pdf`);
+      await new Promise((r) => setTimeout(r, 400));
+      download(out, `成册-${stamp}-副本.pdf`);
+    } else {
+      download(out, `成册-${stamp}.pdf`);
+    }
     const secs = ((performance.now() - t0) / 1000).toFixed(1);
     setStatus(`完成 · ${fmtSize(out.length)} · ${secs}s`);
     toast("导出完成，原文件没有改动");
@@ -371,6 +380,90 @@ async function stampWatermark(bytes, text, opacity) {
   return doc.save();
 }
 
+
+/* ---------- 预设 ---------- */
+const PRESETS = {
+  plain: { pnFormat: "zhTotal", pnPos: "footer-center", pnSize: "xiaowu", pnSkip: "1", tocOn: true, bmOn: true },
+  "blind-page": { pnFormat: "n", pnPos: "footer-center", pnSize: "xiaowu", pnSkip: "0", tocOn: true, bmOn: true },
+  "blind-nopage": { pnFormat: "none", pnPos: "footer-center", pnSize: "xiaowu", pnSkip: "0", tocOn: false, bmOn: false },
+};
+$("#preset").onchange = (e) => {
+  const cfg = PRESETS[e.target.value];
+  if (!cfg) return;
+  $("#pnFormat").value = cfg.pnFormat;
+  $("#pnPos").value = cfg.pnPos;
+  $("#pnSize").value = cfg.pnSize;
+  $("#pnSkip").value = cfg.pnSkip;
+  $("#tocOn").checked = cfg.tocOn;
+  $("#bmOn").checked = cfg.bmOn;
+  $("#formatWrap").hidden = cfg.pnFormat === "none";
+  $("#stripMeta").checked = e.target.value !== "plain";
+  toast("预设已套用，可以再手动微调");
+};
+$("#pnFormat").onchange = () => {
+  $("#formatWrap").hidden = $("#pnFormat").value === "none";
+};
+
+/* ---------- 暗标体检 ---------- */
+let lastScan = null;
+$("#chkRun").onclick = async () => {
+  if (!state.merged) return toast("先选 PDF");
+  setBusy(true, "体检中…");
+  try {
+    const pdfjs = await getPdfjs();
+    const pages = await scanText(pdfjs, state.merged, (i, n) => setStatus(`读取文字 ${i}/${n} 页…`));
+    const lib = await import("./pdf-lib.esm.min.js");
+    const doc = await lib.PDFDocument.load(state.merged, { ignoreEncryption: true });
+    const meta = {
+      author: doc.getAuthor(), title: doc.getTitle(), subject: doc.getSubject(),
+      keywords: doc.getKeywords(), creator: doc.getCreator(), producer: doc.getProducer(),
+    };
+    const terms = buildTerms($("#chkTerms").value);
+    const res = inspect(pages, terms, meta, { pageNumberMode: $("#pnFormat").value === "none" ? "none" : "yes" });
+    lastScan = res;
+    renderCheck(res);
+    setStatus(`体检完成：${res.stats.hits} 处可疑文字 · ${res.stats.headerFooter} 页眉页脚 · ${res.stats.meta} 项文档信息`);
+  } catch (e) {
+    console.error(e); toast("体检失败：" + (e.message || e), 5000);
+  } finally { setBusy(false); }
+};
+
+function renderCheck(res) {
+  const box = $("#chkResult");
+  const lv = { 高: "hi", 中: "mid", 低: "lo" };
+  const rows = res.hits.slice(0, 80).map((h) =>
+    `<li class="${lv[h.level] || "lo"}"><b>第 ${h.page} 页</b> · ${h.why}：<code>${escapeHtml(h.text)}</code></li>`).join("");
+  const hf = res.headerFooter.slice(0, 40).map((h) =>
+    `<li class="mid"><b>第 ${h.page} 页</b> · ${h.where}有字：<code>${escapeHtml(h.text)}</code></li>`).join("");
+  const mt = res.metaIssues.map((m) => `<li class="mid">文档信息「${m.key}」= <code>${escapeHtml(m.value)}</code></li>`).join("");
+  const okAll = !res.stats.hits && !res.stats.headerFooter && !res.stats.meta;
+  box.innerHTML = `
+    <div class="verdict ${okAll ? "ok" : "warn"}">${okAll ? "没发现明显痕迹（仍建议人工翻一遍）" : `发现 ${res.stats.hits} 处文字 · ${res.stats.headerFooter} 处页眉页脚 · ${res.stats.meta} 项文档信息`}</div>
+    ${rows ? `<h4>正文里的可疑文字</h4><ul class="issues">${rows}</ul>` : ""}
+    ${hf ? `<h4>页眉 / 页脚</h4><ul class="issues">${hf}</ul>` : ""}
+    ${mt ? `<h4>文档信息（阅读器「属性」里能看到）</h4><ul class="issues">${mt}</ul>` : ""}
+    ${res.hits.length > 80 ? `<p class="hint">只列出前 80 条。</p>` : ""}`;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+
+$("#chkMeta").onclick = async () => {
+  if (!state.merged) return toast("先选 PDF");
+  setBusy(true, "清除文档信息…");
+  try {
+    const lib = await import("./pdf-lib.esm.min.js");
+    const doc = await lib.PDFDocument.load(state.merged, { ignoreEncryption: true });
+    doc.setAuthor(""); doc.setTitle(""); doc.setSubject(""); doc.setKeywords([]);
+    doc.setCreator(""); doc.setProducer("");
+    state.merged = await doc.save();
+    await rebuild();
+    toast("已清除作者/标题/来源等文档信息");
+  } catch (e) { toast("清除失败：" + e.message, 5000); }
+  finally { setBusy(false); }
+};
+
 /* ---------- 交互绑定 ---------- */
 const drop = $("#drop");
 ["dragenter", "dragover"].forEach((ev) =>
@@ -386,7 +479,7 @@ $("#fileInput").onchange = (e) => { if (e.target.files.length) addFiles(e.target
 $$(".tab").forEach((t) => {
   t.onclick = () => {
     $$(".tab").forEach((x) => x.classList.toggle("on", x === t));
-    ["bind", "page", "ocr", "wm"].forEach((m) => {
+    ["bind", "page", "ocr", "wm", "check"].forEach((m) => {
       const sec = $("#opt-" + m);
       if (sec) sec.hidden = m !== t.dataset.mode;
     });

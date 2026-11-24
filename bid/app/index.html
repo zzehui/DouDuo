@@ -66,6 +66,19 @@
   .prog.on{display:block}
   .prog i{display:block;height:100%;width:0;background:var(--amber);transition:width .2s}
   [hidden]{display:none!important}
+
+  .verdict{margin:10px 0 4px;padding:8px 12px;border-radius:9px;font-size:13.5px}
+  .verdict.ok{background:#e9f7ee;color:#1c6b3a}
+  .verdict.warn{background:#fdf1e3;color:#8a4a10}
+  html[data-theme="dark"] .verdict.ok{background:#12301f;color:#7fd8a2}
+  html[data-theme="dark"] .verdict.warn{background:#33240f;color:#f0bd7a}
+  ul.issues{list-style:none;padding:0;margin:6px 0 14px;font-size:13px;line-height:1.7}
+  ul.issues li{padding:4px 8px;border-left:3px solid var(--line);margin:3px 0;background:var(--card)}
+  ul.issues li.hi{border-left-color:#d94a3d}
+  ul.issues li.mid{border-left-color:#e0a03a}
+  ul.issues li.lo{border-left-color:#8aa0b8}
+  ul.issues code{background:rgba(127,127,127,.14);padding:1px 4px;border-radius:4px}
+  #chkResult h4{margin:14px 0 2px;font-size:13px;color:var(--dim)}
 </style>
 </head>
 <body>
@@ -83,6 +96,7 @@
     <button class="tab" data-mode="page">页面</button>
     <button class="tab" data-mode="ocr">识别文字</button>
     <button class="tab" data-mode="wm">水印</button>
+    <button class="tab" data-mode="check">暗标体检</button>
   </div>
 
   <div class="drop" id="drop">
@@ -96,11 +110,27 @@
   <!-- 成册 -->
   <section id="opt-bind">
     <div class="card">
+      <h3>预设（按招标文件的常见口径）</h3>
+      <div class="row">
+        <select id="preset">
+          <option value="">— 选一个，自动填下面各项 —</option>
+          <option value="plain">普通标：页脚居中「第 X 页 共 Y 页」+ 目录 + 书签</option>
+          <option value="blind-page">暗标·要页码（河北式）：页脚居中、Times 小五、只留页码</option>
+          <option value="blind-nopage">暗标·无页码（浙江式）：不加页码、不加页眉页脚</option>
+        </select>
+        <label><input type="checkbox" id="stripMeta" checked> 清除文档信息（作者/标题/来源，暗标建议勾选）</label>
+        <label><input type="checkbox" id="twoCopies"> 导出正本 + 副本（两份）</label>
+      </div>
+      <p class="hint">预设只改本页的选项，不改你的原文件；各项仍可手动调。</p>
+    </div>
+
+    <div class="card">
       <h3>一、连续页码</h3>
       <div class="row">
         <label>格式</label>
         <select id="pnFormat">
           <option value="zhTotal" selected>第 X 页 共 Y 页</option>
+          <option value="none">不加页码</option>
           <option value="n">1</option>
           <option value="dash">- 1 -</option>
           <option value="zh">第 1 页</option>
@@ -181,6 +211,23 @@
         </select>
       </div>
       <div class="prog" id="prog"><i></i></div>
+    </div>
+  </section>
+
+  <!-- 暗标体检 -->
+  <section id="opt-check" hidden>
+    <div class="card">
+      <h3>暗标体检（找出能识别出投标人的痕迹）</h3>
+      <p class="hint">依据浙江、河北、内蒙、广东、山东等地招标文件对「技术标暗标」的通用要求：不得出现单位名称、地址、人员姓名、徽标、获奖、专利/资质编号、电子签章痕迹；除页码外不得设页眉页脚。</p>
+      <div class="row">
+        <label>你自己的敏感词（公司全称、法人姓名，逗号分隔）</label>
+        <input type="text" id="chkTerms" placeholder="例如：杭州豆多科技有限公司，张三" style="min-width:280px">
+      </div>
+      <div class="row">
+        <button class="btn" id="chkRun">开始体检</button>
+        <button class="btn ghost" id="chkMeta">清除文档信息（作者/标题等）</button>
+      </div>
+      <div id="chkResult"></div>
     </div>
   </section>
 

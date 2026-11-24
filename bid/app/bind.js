@@ -23,6 +23,7 @@ function numText(fmt, n, total) {
  *         startAt=1, skipFirst=0, skipBlankPages=false, edge=1.2 } // edge: 距边 cm
  */
 export async function addPageNumbers(doc, opts = {}) {
+  if (opts.format === 'none') return;
   const { StandardFonts, rgb } = await import('./pdf-lib.esm.min.js');
   const o = {
     format: 'n', size: SIZES.wuhao, font: 'TimesRoman', pos: 'footer-center',
