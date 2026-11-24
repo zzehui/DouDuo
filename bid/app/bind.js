@@ -145,7 +145,7 @@ export function setOutline(doc, chapters) {
  * 取字体：cjk=true 时嵌入 Noto Sans SC（需传入字体字节），否则用内置 Helvetica。
  * pdf-lib 的 StandardFonts 是 WinAnsi 编码，画不了中文，所以中文必须走嵌入字体。
  */
-export async function fontFor(doc, { cjk = false, bytes = null } = {}) {
+export async function fontFor(doc, { cjk = false, bytes = null, subset = true } = {}) {
   await loadPdfLib();
   const { PDFDocument, StandardFonts } = requirePdfLib();
   if (!cjk) return doc.embedFont(StandardFonts.Helvetica);
@@ -155,7 +155,7 @@ export async function fontFor(doc, { cjk = false, bytes = null } = {}) {
     PDFDocument.prototype.registerFontkit(fontkit);
     PDFDocument.__fontkitReady = true;
   }
-  return doc.embedFont(bytes, { subset: true });
+  return doc.embedFont(bytes, { subset });
 }
 
 // pdf-lib 的低层类在 ESM 里通过动态 import 拿，这里缓存一份

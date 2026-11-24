@@ -71,7 +71,7 @@ async function loadCjkFont() {
     }
     return new Uint8Array(await res.arrayBuffer());
   } catch (e) {
-    console.warn("font load failed", e);
+    console.warn("中文字体加载失败：", e && e.message);
     return null;
   }
 }
@@ -287,7 +287,7 @@ async function exportBook() {
       fontBytes = await loadCjkFont();
       if (fontBytes) {
         setStatus("嵌入中文字体…");
-        fontObj = await fontFor(doc, { cjk: true, bytes: fontBytes });
+        fontObj = await fontFor(doc, { cjk: true, bytes: fontBytes, subset: false });
       } else {
         fmtFinal = CJK.test(title) || chapters.some((c) => CJK.test(c.title)) ? "zh" : fmt;
         if (fmtFinal === "zh" || fmtFinal === "zhTotal") fmtFinal = "n";
@@ -347,7 +347,7 @@ async function stampWatermark(bytes, text, opacity) {
   const doc = await lib.PDFDocument.load(bytes, { ignoreEncryption: true });
   const fontBytes = await loadCjkFont();
   if (!fontBytes) throw new Error("水印需要中文字体，加载失败");
-  const font = await fontFor(doc, { cjk: true, bytes: fontBytes });
+  const font = await fontFor(doc, { cjk: true, bytes: fontBytes, subset: false });
   const size = 42;
   for (const page of doc.getPages()) {
     const { width, height } = page.getSize();
