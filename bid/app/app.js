@@ -288,6 +288,12 @@ async function exportBook() {
       if (fontBytes) {
         setStatus("嵌入中文字体…");
         fontObj = await fontFor(doc, { cjk: true, bytes: fontBytes, subset: false });
+        try {
+          const cs = new Set(fontObj.getCharacterSet ? fontObj.getCharacterSet() : []);
+          const used = (title + chapters.map((c) => c.title).join("")).replace(/\s/g, "");
+          const missing = [...new Set([...used])].filter((ch) => !cs.has(ch.codePointAt(0)));
+          if (missing.length) toast(`字体里没有这几个字：${missing.join("")}（会显示成空白）`, 7000);
+        } catch (e) { /* 字符集接口不可用就跳过 */ }
       } else {
         fmtFinal = CJK.test(title) || chapters.some((c) => CJK.test(c.title)) ? "zh" : fmt;
         if (fmtFinal === "zh" || fmtFinal === "zhTotal") fmtFinal = "n";
